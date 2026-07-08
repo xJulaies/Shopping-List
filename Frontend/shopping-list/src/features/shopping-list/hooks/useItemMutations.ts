@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createItem, deleteItem, updateItem } from "../services/itemService";
-import type { UpdateShoppingItemInput } from "../types/item";
+import type { ShoppingItem, UpdateShoppingItemInput } from "../types/item";
 
 export function useCreateItem() {
   const queryClient = useQueryClient();
@@ -17,7 +17,13 @@ export function useUpdateItem() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateShoppingItemInput }) =>
       updateItem(id, data),
-    onSuccess: (_, variables) => {
+    onSuccess: (updatedItem, variables) => {
+      queryClient.setQueryData(["items", variables.id], updatedItem);
+      queryClient.setQueryData<ShoppingItem[]>(["items"], (items) =>
+        items?.map((item) =>
+          item.id === variables.id ? updatedItem : item,
+        ),
+      );
       queryClient.invalidateQueries({ queryKey: ["items"] });
       queryClient.invalidateQueries({ queryKey: ["items", variables.id] });
     },
