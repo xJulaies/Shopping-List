@@ -1,4 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  setActionFeedback,
+  takeActionFeedback,
+} from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
 import { useDeleteItem } from "../hooks/useItemMutations";
 
@@ -6,12 +11,13 @@ export function ItemDetails({ itemId }: { itemId: string }) {
   const { data: item, isLoading, isError } = useItem(itemId);
   const deleteItem = useDeleteItem();
   const navigate = useNavigate();
+  const [feedback, setFeedback] = useState(() => takeActionFeedback());
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
         <span className="loading loading-spinner loading-lg" />
-        <span className="ml-3">Loading item...</span>
+        <span className="ml-3">Eintrag wird geladen...</span>
       </div>
     );
   }
@@ -19,9 +25,9 @@ export function ItemDetails({ itemId }: { itemId: string }) {
   if (isError || !item) {
     return (
       <div className="flex flex-col items-center py-16 text-center gap-3">
-        <p className="text-lg font-medium">Item not found.</p>
-        <Link to="/_authenticated/items" className="link link-primary">
-          Back to overview
+        <p className="text-lg font-medium">Eintrag nicht gefunden.</p>
+        <Link to="/items" className="link link-primary">
+          Zurück zur Übersicht
         </Link>
       </div>
     );
@@ -29,25 +35,39 @@ export function ItemDetails({ itemId }: { itemId: string }) {
 
   function handleDelete() {
     const shouldDelete = window.confirm(
-      "Do you really want to delete this item?",
+      "Möchtest du diesen Eintrag wirklich löschen?",
     );
     if (!shouldDelete) return;
 
     deleteItem.mutate(itemId, {
       onSuccess: () => {
-        navigate({ to: "/_authenticated/items" });
+        setActionFeedback("Eintrag wurde gelöscht.");
+        navigate({ to: "/items" });
       },
     });
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl px-5 py-8">
       <Link
-        to="/_authenticated/items"
+        to="/items"
         className="link link-primary text-sm mb-4 inline-block"
       >
-        ← Back to overview
+        ← Zurück zur Übersicht
       </Link>
+
+      {feedback && (
+        <div className="alert alert-success mb-4">
+          <span>{feedback}</span>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => setFeedback(null)}
+          >
+            Schließen
+          </button>
+        </div>
+      )}
 
       <div className="card bg-base-100 shadow-sm border border-base-300">
         <div className="card-body">
@@ -89,7 +109,7 @@ export function ItemDetails({ itemId }: { itemId: string }) {
 
           <div className="card-actions justify-end mt-6">
             <Link
-              to="/_authenticated/items/$itemId/edit"
+              to="/items/$itemId/edit"
               params={{ itemId: item.id }}
               className="btn btn-outline"
             >

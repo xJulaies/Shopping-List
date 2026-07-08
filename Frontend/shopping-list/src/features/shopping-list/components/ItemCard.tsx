@@ -16,14 +16,14 @@ const priorityColors: Record<ShoppingItem["priority"], string> = {
 export function ItemCard({ item }: { item: ShoppingItem }) {
   return (
     <Link
-      to="/_authenticated/items/$itemId"
+      to="/items/$itemId"
       params={{ itemId: item.id }}
       className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-base-300"
     >
       <div className="card-body">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="card-title text-base">{item.title}</h2>
-          <span className={`badge ${statusColors[item.status]}`}>
+          <h2 className="card-title text-base leading-snug">{item.title}</h2>
+          <span className={`badge shrink-0 ${statusColors[item.status]}`}>
             {item.status}
           </span>
         </div>

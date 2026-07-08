@@ -4,9 +4,11 @@ import { ItemCard } from "./ItemCard";
 export function ItemList({ items }: { items: ShoppingItem[] }) {
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-lg font-medium">No items found.</p>
-        <p className="text-base-content/60 mt-1">Create your first item.</p>
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-base-300 bg-base-100 py-16 text-center">
+        <p className="text-lg font-medium">Noch keine Einträge vorhanden.</p>
+        <p className="mt-1 text-base-content/60">
+          Erstelle deinen ersten Einkaufseintrag.
+        </p>
       </div>
     );
   }
