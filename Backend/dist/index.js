@@ -50,6 +50,9 @@ const app = (0, express_1.default)();
 app.use((0, cors_1.default)({ origin: "http://localhost:5173" }));
 app.use((0, express_1.json)());
 app.use((0, express_2.clerkMiddleware)());
+app.get("/", (_req, res) => {
+    return res.status(200).json({ status: "ok", message: "API works" });
+});
 app.use(`${BASE_URL}/lists`, shoppingList_routes_1.shoppingListRouter);
 app.use((_req, _res, next) => {
     return next((0, createError_1.createError)(404, "Not found"));
@@ -61,6 +64,7 @@ app.use((err, _req, res, _next) => {
 });
 async function startServer() {
     try {
+        (0, settings_1.validateRuntimeSettings)();
         await (0, db_1.connectMongoDB)();
         app.listen(PORT, () => {
             console.log(`Server Booted at Port ${PORT}`);

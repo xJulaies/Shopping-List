@@ -28,23 +28,27 @@ export const createShoppingListItemSchema = z.object({
     .min(1, "Item name is required")
     .max(80, "Item name must be 80 characters or less"),
   quantity: z
-    .number()
+    .coerce.number()
     .int("Quantity must be a whole number")
     .min(1, "Quantity must be at least 1")
     .default(1),
 });
 
-export const updateShoppingListItemSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Item name is required")
-    .max(80, "Item name must be 80 characters or less")
-    .optional(),
-  quantity: z
-    .number()
-    .int("Quantity must be a whole number")
-    .min(1, "Quantity must be at least 1")
-    .optional(),
-  checked: z.boolean().optional(),
-});
+export const updateShoppingListItemSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Item name is required")
+      .max(80, "Item name must be 80 characters or less")
+      .optional(),
+    quantity: z
+      .coerce.number()
+      .int("Quantity must be a whole number")
+      .min(1, "Quantity must be at least 1")
+      .optional(),
+    checked: z.boolean().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required",
+  });

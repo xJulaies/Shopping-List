@@ -28,12 +28,13 @@ exports.createShoppingListItemSchema = zod_1.z.object({
         .min(1, "Item name is required")
         .max(80, "Item name must be 80 characters or less"),
     quantity: zod_1.z
-        .number()
+        .coerce.number()
         .int("Quantity must be a whole number")
         .min(1, "Quantity must be at least 1")
         .default(1),
 });
-exports.updateShoppingListItemSchema = zod_1.z.object({
+exports.updateShoppingListItemSchema = zod_1.z
+    .object({
     name: zod_1.z
         .string()
         .trim()
@@ -41,10 +42,13 @@ exports.updateShoppingListItemSchema = zod_1.z.object({
         .max(80, "Item name must be 80 characters or less")
         .optional(),
     quantity: zod_1.z
-        .number()
+        .coerce.number()
         .int("Quantity must be a whole number")
         .min(1, "Quantity must be at least 1")
         .optional(),
     checked: zod_1.z.boolean().optional(),
+})
+    .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required",
 });
 //# sourceMappingURL=shoppingList.zodSchema.js.map

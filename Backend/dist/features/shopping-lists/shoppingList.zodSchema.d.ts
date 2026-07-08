@@ -7,11 +7,11 @@ export declare const updateShoppingListSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const createShoppingListItemSchema: z.ZodObject<{
     name: z.ZodString;
-    quantity: z.ZodDefault<z.ZodNumber>;
+    quantity: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
 }, z.core.$strip>;
 export declare const updateShoppingListItemSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
-    quantity: z.ZodOptional<z.ZodNumber>;
+    quantity: z.ZodOptional<z.ZodCoercedNumber<unknown>>;
     checked: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 //# sourceMappingURL=shoppingList.zodSchema.d.ts.map

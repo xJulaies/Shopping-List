@@ -1,7 +1,7 @@
 import express, { json, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
-import { settings } from "./config/settings";
+import { settings, validateRuntimeSettings } from "./config/settings";
 import { createError } from "./lib/error-handling/createError";
 import { createAnswer } from "./lib/error-handling/createAnswer";
 import { connectMongoDB } from "./db";
@@ -15,6 +15,10 @@ const app = express();
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(json());
 app.use(clerkMiddleware());
+
+app.get("/", (_req: Request, res: Response) => {
+  return res.status(200).json({ status: "ok", message: "API works" });
+});
 
 app.use(`${BASE_URL}/lists`, shoppingListRouter);
 
@@ -32,6 +36,7 @@ app.use(
 
 async function startServer() {
   try {
+    validateRuntimeSettings();
     await connectMongoDB();
     app.listen(PORT, () => {
       console.log(`Server Booted at Port ${PORT}`);
