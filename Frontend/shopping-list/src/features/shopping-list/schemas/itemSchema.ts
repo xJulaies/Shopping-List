@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 export const itemCategorySchema = z.enum([
   "Obst & Gemüse",

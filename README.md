@@ -1,91 +1,225 @@
-# Shopping List App
+# Shopping List App - Projektkontext
 
-Frontend:
+Diese Datei dient als kurzer Uebergabekontext fuer einen neuen Chat.
 
-A shopping list application built with **React**, **TypeScript**, **Vite**, **Tailwind CSS**, and **DaisyUI**.
+## Ziel
 
-The project uses a **feature-based architecture** with reusable shared components.
+Die App ist eine Fullstack-Shopping-List-Anwendung mit Authentifizierung. Nutzer melden sich ueber Clerk an, erstellen Einkaufslisten und verwalten darin einzelne Eintraege.
+
+## Projektstruktur
+
+```txt
+Gruppenarbeit2/
+|-- Backend/
+|   |-- src/
+|   |   |-- config/settings.ts
+|   |   |-- db.ts
+|   |   |-- index.ts
+|   |   |-- middlewares/
+|   |   |-- lib/error-handling/
+|   |   `-- features/
+|   |       |-- shopping-lists/
+|   |       `-- shopping-items/
+|   `-- package.json
+|-- Frontend/
+|   `-- shopping-list/
+|       |-- src/
+|       |   |-- features/
+|       |   |-- routes/
+|       |   |-- shared/
+|       |   |-- context/
+|       |   |-- App.tsx
+|       |   `-- main.tsx
+`-- readme.md
+```
 
 ## Tech Stack
 
-- React
+Frontend:
+
+- React 19
 - TypeScript
 - Vite
-- Tailwind CSS
+- Tailwind CSS 4
 - DaisyUI
-- Clerk Authentication
+- Clerk React
 - TanStack Router
 - TanStack Query
 - TanStack Form
-- Zod Validation
+- Zod
+- Vitest
 
-## Project Structure
+Backend:
 
-```txt
-src/
-├── assets/
-├── context/
-│   └── theme/
-├── features/
-│   ├── auth/
-│   │   └── components/
-│   ├── dashboard/
-│   │   ├── components/
-│   │   └── shopping-list/
-│   │       └── components/
-│   └── home/
-│       └── components/
-├── routes/
-├── shared/
-│   ├── components/
-│   └── layouts/
-├── App.tsx
-└── main.tsx
+- Node.js
+- Express 5
+- TypeScript
+- MongoDB
+- Mongoose
+- Clerk Express
+- Zod
+- tsx
+
+## Lokales Setup
+
+Backend:
+
+```bash
+cd Backend
+npm install
+npm run dev
 ```
 
-## Architecture
+Frontend:
 
-### `features`
+```bash
+cd Frontend/shopping-list
+npm install
+npm run dev
+```
 
-Contains application-specific business features.
+Standard-Ports:
 
-- `auth` handles authentication-related UI and Clerk integration.
-- `home` contains the public landing page.
-- `dashboard` contains protected user areas.
-- `dashboard/shopping-list` belongs to the dashboard and contains the shopping list feature.
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+- API-Basis: `http://localhost:3000/api`
 
-### `shared`
+## Environment
 
-Contains reusable code used across multiple features.
+Backend `.env`:
 
-Examples:
+```env
+PORT=3000
+BASE_URL=/api
+MONGODB_URL=mongodb://localhost:27017/shopping-list-db
+CLERK_PUBLISHABLE_KEY=...
+CLERK_SECRET_KEY=...
+```
 
-- Navbar
-- Footer
-- Buttons
-- Inputs
-- Layouts
+Frontend `.env`:
 
-### `routes`
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_CLERK_PUBLISHABLE_KEY=...
+```
 
-Contains route definitions using **TanStack Router**.
+Wichtig: Clerk Secret Keys nie in Chats oder Commits posten.
 
-### `context`
+## Backend-Architektur
 
-Contains global React contexts, such as the theme context.
+Der Einstiegspunkt ist `Backend/src/index.ts`.
 
-## Forms and Validation
+Aktuelle Routen:
 
-Forms are built with **TanStack Form**.
+- `GET /` Healthcheck
+- `/api/lists`
+- `/api/lists/:listId/items`
 
-Validation is handled with **Zod** schemas to keep form rules type-safe and reusable.
+Die API ist listenbasiert. Items haengen immer an einer Liste:
 
-## Data Fetching
+```txt
+GET    /api/lists
+POST   /api/lists
+GET    /api/lists/:listId
+PATCH  /api/lists/:listId
+DELETE /api/lists/:listId
 
-Server state and API requests are managed with **TanStack Query**.
+GET    /api/lists/:listId/items
+POST   /api/lists/:listId/items
+GET    /api/lists/:listId/items/:itemId
+PATCH  /api/lists/:listId/items/:itemId
+DELETE /api/lists/:listId/items/:itemId
+```
 
-## Authentication
+Auth:
 
-Authentication is handled with **Clerk**.
+- Clerk wird ueber `clerkMiddleware` eingebunden.
+- `requireAuth.ts` nutzt modern `getAuth(req)`.
+- Controller speichern und pruefen `userId`, damit Nutzer nur ihre eigenen Listen und Items sehen.
 
-Protected dashboard routes are only available for authenticated users.
+MongoDB:
+
+- Verbindung in `Backend/src/db.ts`.
+- Datenbank: `shopping-list-db`.
+- Mongoose-Models liegen featurebasiert in `shopping-lists` und `shopping-items`.
+- `shoppingItem.routes.ts` braucht `Router({ mergeParams: true })`, weil `listId` aus `/api/lists/:listId/items` kommt.
+
+Error Handling:
+
+- Fehler werden ueber `createError` erzeugt.
+- Antworten laufen ueber `createAnswer`.
+- Zentraler Error Handler sitzt in `index.ts`.
+
+## Frontend-Architektur
+
+Das Frontend ist featurebasiert aufgebaut.
+
+Wichtige Bereiche:
+
+- `features/auth`: Clerk Sign-in und Sign-up Pages.
+- `features/dashboard`: Dashboard.
+- `features/shopping-list`: Listen, Items, Services, Hooks, Schemas und Komponenten.
+- `routes`: TanStack Router File Routes.
+- `shared`: Wiederverwendbare UI-Komponenten.
+- `context`: Theme und Listenpraeferenzen.
+
+Routing:
+
+- Oeffentliche Seiten: `/`, `/about`, `/sign-in`, `/sign-up`
+- Geschuetzte Seiten liegen unter `_authenticated`
+- Listenuebersicht: `/lists`
+- Einzelne Liste: `/lists/$listId`
+- Beispiel: `http://localhost:5173/lists/6a4e14a0666273139b012b61`
+
+Clerk:
+
+- `main.tsx` wrapped die App mit `ClerkProvider`.
+- `App.tsx` wartet auf `auth.isLoaded`.
+- Sign-in und Sign-up nutzen Clerk Components mit `routing="path"`.
+- Splat-Routes fuer Clerk-Unterpfade existieren:
+  - `routes/sign-in.$.tsx`
+  - `routes/sign-up.$.tsx`
+
+API-Anbindung:
+
+- `listService.ts` ruft `/lists` auf.
+- `itemService.ts` ruft `/lists/:listId/items` auf.
+- Hooks holen Clerk Tokens ueber `getToken()` und senden `Authorization: Bearer <token>`.
+- In Tests faellt der Item-Service auf `localStorage` und Mockdaten zurueck.
+
+## Zuletzt wichtige Fixes
+
+- Backend wurde auf die Frontend-API angepasst: Items sind jetzt list-scoped.
+- Alte direkte `/api/items`-Nutzung wurde im Frontend durch `/api/lists/:listId/items` ersetzt.
+- Clerk wurde von deprecated Varianten auf moderne Route-/Middleware-Nutzung umgestellt.
+- 404 bei `/lists/:listId` war TanStack-Router/Dev-Server-Kontext; Route existiert dynamisch.
+- Backend-404 bei Items lag an fehlendem `mergeParams: true` im Child Router.
+- Umlaute im Frontend wurden korrigiert, statt `ae/oe/ue` werden echte Umlaute angezeigt.
+
+## Pruefung
+
+Frontend wurde zuletzt erfolgreich geprueft mit:
+
+```bash
+npm run test
+npm run build
+```
+
+Fuer Backend nach Aenderungen nutzen:
+
+```bash
+cd Backend
+npm run build
+```
+
+## Naechste sinnvolle Checks
+
+- Backend mit `npm run build` pruefen.
+- Frontend und Backend parallel starten.
+- In MongoDB pruefen, ob Listen mit der richtigen Clerk `userId` gespeichert werden.
+- Im Browser mit angemeldetem Clerk-User testen:
+  - Liste erstellen
+  - Liste oeffnen
+  - Item erstellen
+  - Item bearbeiten
+  - Item loeschen

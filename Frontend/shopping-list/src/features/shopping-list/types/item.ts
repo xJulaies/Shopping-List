@@ -1,4 +1,4 @@
-export type ItemCategory =
+﻿export type ItemCategory =
   | "Obst & Gemüse"
   | "Milchprodukte"
   | "Fleisch & Fisch"
@@ -14,6 +14,7 @@ export type ItemPriority = "niedrig" | "mittel" | "hoch";
 
 export interface ShoppingItem {
   id: string;
+  listId?: string;
   title: string;
   description: string;
   category: ItemCategory;

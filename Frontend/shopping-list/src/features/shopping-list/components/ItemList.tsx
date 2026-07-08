@@ -1,7 +1,13 @@
-import type { ShoppingItem } from "../types/item";
+﻿import type { ShoppingItem } from "../types/item";
 import { ItemCard } from "./ItemCard";
 
-export function ItemList({ items }: { items: ShoppingItem[] }) {
+export function ItemList({
+  items,
+  listId,
+}: {
+  items: ShoppingItem[];
+  listId: string;
+}) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-base-300 bg-base-100 py-16 text-center">
@@ -16,7 +22,7 @@ export function ItemList({ items }: { items: ShoppingItem[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((item) => (
-        <ItemCard key={item.id} item={item} />
+        <ItemCard key={item.id} item={item} listId={listId} />
       ))}
     </div>
   );

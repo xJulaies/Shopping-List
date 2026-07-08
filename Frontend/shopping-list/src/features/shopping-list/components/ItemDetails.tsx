@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+﻿import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   setActionFeedback,
@@ -7,8 +7,14 @@ import {
 import { useItem } from "../hooks/useItem";
 import { useDeleteItem } from "../hooks/useItemMutations";
 
-export function ItemDetails({ itemId }: { itemId: string }) {
-  const { data: item, isLoading, isError } = useItem(itemId);
+export function ItemDetails({
+  listId,
+  itemId,
+}: {
+  listId: string;
+  itemId: string;
+}) {
+  const { data: item, isLoading, isError } = useItem(listId, itemId);
   const deleteItem = useDeleteItem();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState(() => takeActionFeedback());
@@ -26,7 +32,11 @@ export function ItemDetails({ itemId }: { itemId: string }) {
     return (
       <div className="flex flex-col items-center py-16 text-center gap-3">
         <p className="text-lg font-medium">Eintrag nicht gefunden.</p>
-        <Link to="/items" className="link link-primary">
+        <Link
+          to="/lists/$listId"
+          params={{ listId }}
+          className="link link-primary"
+        >
           Zurück zur Übersicht
         </Link>
       </div>
@@ -39,21 +49,25 @@ export function ItemDetails({ itemId }: { itemId: string }) {
     );
     if (!shouldDelete) return;
 
-    deleteItem.mutate(itemId, {
-      onSuccess: () => {
-        setActionFeedback("Eintrag wurde gelöscht.");
-        navigate({ to: "/items" });
+    deleteItem.mutate(
+      { listId, id: itemId },
+      {
+        onSuccess: () => {
+          setActionFeedback("Eintrag wurde gelöscht.");
+          navigate({ to: "/lists/$listId", params: { listId } });
+        },
       },
-    });
+    );
   }
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-8">
       <Link
-        to="/items"
+        to="/lists/$listId"
+        params={{ listId }}
         className="link link-primary text-sm mb-4 inline-block"
       >
-        ← Zurück zur Übersicht
+        Zurück zur Übersicht
       </Link>
 
       {feedback && (
@@ -96,7 +110,7 @@ export function ItemDetails({ itemId }: { itemId: string }) {
             <div>
               <span className="text-base-content/50">Preis</span>
               <p className="font-medium">
-                {item.price !== undefined ? `${item.price.toFixed(2)} €` : "—"}
+                {item.price !== undefined ? `${item.price.toFixed(2)} EUR` : "-"}
               </p>
             </div>
             {item.store && (
@@ -109,8 +123,8 @@ export function ItemDetails({ itemId }: { itemId: string }) {
 
           <div className="card-actions justify-end mt-6">
             <Link
-              to="/items/$itemId/edit"
-              params={{ itemId: item.id }}
+              to="/lists/$listId/items/$itemId/edit"
+              params={{ listId, itemId: item.id }}
               className="btn btn-outline"
             >
               Bearbeiten

@@ -1,8 +1,9 @@
-import { Link } from "@tanstack/react-router";
+﻿import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useListPreferences } from "@/context/ListPreferencesContext";
 import { takeActionFeedback } from "@/shared/utils/actionFeedback";
 import { useItems } from "../hooks/useItems";
+import { useShoppingList } from "../hooks/useLists";
 import { ItemList } from "./ItemList";
 import type { ShoppingItem } from "../types/item";
 
@@ -40,8 +41,9 @@ function sortItems(items: ShoppingItem[], sortBy: string) {
   });
 }
 
-export function ShoppingListOverview() {
-  const { data: items, isLoading, isError } = useItems();
+export function ShoppingListOverview({ listId }: { listId: string }) {
+  const { data: list } = useShoppingList(listId);
+  const { data: items, isLoading, isError } = useItems(listId);
   const [feedback, setFeedback] = useState(() => takeActionFeedback());
   const {
     search,
@@ -95,15 +97,26 @@ export function ShoppingListOverview() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-8">
+      <Link to="/lists" className="link link-primary mb-4 inline-block">
+        Zurück zu allen Listen
+      </Link>
+
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-medium text-primary">Einkaufsliste</p>
-          <h1 className="text-3xl font-bold">Was fehlt noch?</h1>
+          <h1 className="text-3xl font-bold">
+            {list?.title ?? "Was fehlt noch?"}
+          </h1>
           <p className="mt-2 text-base-content/70">
-            Sortiere deine Einkäufe nach Status, Priorität und geplantem Preis.
+            {list?.description ||
+              "Sortiere deine Einkäufe nach Status, Priorität und geplantem Preis."}
           </p>
         </div>
-        <Link to="/items/new" className="btn btn-primary">
+        <Link
+          to="/lists/$listId/items/new"
+          params={{ listId }}
+          className="btn btn-primary"
+        >
           Neuer Eintrag
         </Link>
       </div>
@@ -224,7 +237,7 @@ export function ShoppingListOverview() {
         </p>
       </div>
 
-      <ItemList items={filteredItems} />
+      <ItemList items={filteredItems} listId={listId} />
     </div>
   );
 }

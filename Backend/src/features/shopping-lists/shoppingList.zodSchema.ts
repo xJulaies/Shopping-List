@@ -4,51 +4,17 @@ export const createShoppingListSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, "Title is required")
+    .min(2, "Title must be at least 2 characters long")
     .max(80, "Title must be 80 characters or less"),
-});
-
-export const updateShoppingListSchema = z
-  .object({
-    title: z
-      .string()
-      .trim()
-      .min(1, "Title is required")
-      .max(80, "Title must be 80 characters or less")
-      .optional(),
-  })
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "At least one field is required",
-  });
-
-export const createShoppingListItemSchema = z.object({
-  name: z
+  description: z
     .string()
     .trim()
-    .min(1, "Item name is required")
-    .max(80, "Item name must be 80 characters or less"),
-  quantity: z
-    .coerce.number()
-    .int("Quantity must be a whole number")
-    .min(1, "Quantity must be at least 1")
-    .default(1),
+    .max(300, "Description must be 300 characters or less")
+    .optional(),
 });
 
-export const updateShoppingListItemSchema = z
-  .object({
-    name: z
-      .string()
-      .trim()
-      .min(1, "Item name is required")
-      .max(80, "Item name must be 80 characters or less")
-      .optional(),
-    quantity: z
-      .coerce.number()
-      .int("Quantity must be a whole number")
-      .min(1, "Quantity must be at least 1")
-      .optional(),
-    checked: z.boolean().optional(),
-  })
+export const updateShoppingListSchema = createShoppingListSchema
+  .partial()
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field is required",
   });

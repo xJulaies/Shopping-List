@@ -1,15 +1,8 @@
 import { HydratedDocument } from "mongoose";
-export type TShoppingListItem = {
-    name: string;
-    quantity: number;
-    checked: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-};
 export type TShoppingList = {
     userId: string;
     title: string;
-    items: TShoppingListItem[];
+    description?: string;
     createdAt: Date;
     updatedAt: Date;
 };

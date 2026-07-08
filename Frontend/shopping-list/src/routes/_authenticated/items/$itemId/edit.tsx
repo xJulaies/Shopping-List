@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EditItemPage } from "../../../../features/shopping-list/components/EditItemPage";
+import { ShoppingListsPage } from "../../../../features/shopping-list/components/ShoppingListsPage";
 
 export const Route = createFileRoute("/_authenticated/items/$itemId/edit")({
-  component: RouteComponent,
+  component: ShoppingListsPage,
 });
-
-function RouteComponent() {
-  const { itemId } = Route.useParams();
-  return <EditItemPage itemId={itemId} />;
-}

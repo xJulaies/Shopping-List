@@ -2,25 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShoppingListModel = void 0;
 const mongoose_1 = require("mongoose");
-const shoppingListItemSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 80,
-    },
-    quantity: {
-        type: Number,
-        required: true,
-        min: 1,
-        default: 1,
-    },
-    checked: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-}, { timestamps: true });
 const shoppingListSchema = new mongoose_1.Schema({
     userId: {
         type: String,
@@ -32,11 +13,14 @@ const shoppingListSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         trim: true,
+        minlength: 2,
         maxlength: 80,
     },
-    items: {
-        type: [shoppingListItemSchema],
-        default: [],
+    description: {
+        type: String,
+        trim: true,
+        maxlength: 300,
+        default: "",
     },
 }, { timestamps: true });
 shoppingListSchema.index({ userId: 1, createdAt: -1 });

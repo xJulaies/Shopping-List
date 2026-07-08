@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CreateItemPage } from "../../../features/shopping-list/components/CreateItemPage";
+import { ShoppingListsPage } from "../../../features/shopping-list/components/ShoppingListsPage";
 
 export const Route = createFileRoute("/_authenticated/items/new")({
-  component: CreateItemPage,
+  component: ShoppingListsPage,
 });

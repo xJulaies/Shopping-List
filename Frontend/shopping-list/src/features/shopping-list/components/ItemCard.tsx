@@ -13,11 +13,17 @@ const priorityColors: Record<ShoppingItem["priority"], string> = {
   niedrig: "badge-ghost",
 };
 
-export function ItemCard({ item }: { item: ShoppingItem }) {
+export function ItemCard({
+  item,
+  listId,
+}: {
+  item: ShoppingItem;
+  listId: string;
+}) {
   return (
     <Link
-      to="/items/$itemId"
-      params={{ itemId: item.id }}
+      to="/lists/$listId/items/$itemId"
+      params={{ listId, itemId: item.id }}
       className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-base-300"
     >
       <div className="card-body">
@@ -44,7 +50,7 @@ export function ItemCard({ item }: { item: ShoppingItem }) {
             {item.quantity} {item.unit}
           </span>
           {item.price !== undefined && (
-            <span className="font-semibold">{item.price.toFixed(2)} €</span>
+            <span className="font-semibold">{item.price.toFixed(2)} EUR</span>
           )}
         </div>
       </div>

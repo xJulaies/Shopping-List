@@ -43,21 +43,29 @@ const settings_1 = require("./config/settings");
 const createError_1 = require("./lib/error-handling/createError");
 const createAnswer_1 = require("./lib/error-handling/createAnswer");
 const db_1 = require("./db");
+const shoppingItem_routes_1 = require("./features/shopping-items/shoppingItem.routes");
 const shoppingList_routes_1 = require("./features/shopping-lists/shoppingList.routes");
 const BASE_URL = settings_1.settings.BASE_URL;
 const PORT = settings_1.settings.PORT;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({ origin: "http://localhost:5173" }));
 app.use((0, express_1.json)());
-app.use((0, express_2.clerkMiddleware)());
 app.get("/", (_req, res) => {
     return res.status(200).json({ status: "ok", message: "API works" });
 });
-app.use(`${BASE_URL}/lists`, shoppingList_routes_1.shoppingListRouter);
+app.use(`${BASE_URL}/lists`, (0, express_2.clerkMiddleware)({
+    publishableKey: settings_1.settings.CLERK_PUBLISHABLE_KEY,
+    secretKey: settings_1.settings.CLERK_SECRET_KEY,
+}), shoppingList_routes_1.shoppingListRouter);
+app.use(`${BASE_URL}/lists/:listId/items`, (0, express_2.clerkMiddleware)({
+    publishableKey: settings_1.settings.CLERK_PUBLISHABLE_KEY,
+    secretKey: settings_1.settings.CLERK_SECRET_KEY,
+}), shoppingItem_routes_1.shoppingItemRouter);
 app.use((_req, _res, next) => {
     return next((0, createError_1.createError)(404, "Not found"));
 });
 app.use((err, _req, res, _next) => {
+    console.error("Backend error:", err);
     return res
         .status(err.status || 500)
         .json((0, createAnswer_1.createAnswer)(err.status || 500, err.message || "Server Error", []));

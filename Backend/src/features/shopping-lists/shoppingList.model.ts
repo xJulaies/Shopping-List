@@ -1,45 +1,14 @@
 import { HydratedDocument, model, Schema } from "mongoose";
 
-export type TShoppingListItem = {
-  name: string;
-  quantity: number;
-  checked: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export type TShoppingList = {
   userId: string;
   title: string;
-  items: TShoppingListItem[];
+  description?: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type TShoppingListDocument = HydratedDocument<TShoppingList>;
-
-const shoppingListItemSchema = new Schema<TShoppingListItem>(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 80,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-      default: 1,
-    },
-    checked: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-  },
-  { timestamps: true },
-);
 
 const shoppingListSchema = new Schema<TShoppingList>(
   {
@@ -53,11 +22,14 @@ const shoppingListSchema = new Schema<TShoppingList>(
       type: String,
       required: true,
       trim: true,
+      minlength: 2,
       maxlength: 80,
     },
-    items: {
-      type: [shoppingListItemSchema],
-      default: [],
+    description: {
+      type: String,
+      trim: true,
+      maxlength: 300,
+      default: "",
     },
   },
   { timestamps: true },

@@ -295,7 +295,7 @@ Controller sollen:
 - erfolgreiche Antworten mit `createAnswer(...)` senden
 - private Daten immer mit `userId` filtern
 - bei IDs zuerst `isValidObjectId` pruefen
-- bei Updates `{ new: true, runValidators: true }` setzen
+- bei Updates `{ returnDocument: "after", runValidators: true }` setzen
 
 Beispiel:
 
@@ -303,7 +303,7 @@ Beispiel:
 const updatedList = await ShoppingListModel.findOneAndUpdate(
   { _id: listId, userId: authUserId },
   updateData,
-  { new: true, runValidators: true },
+  { returnDocument: "after", runValidators: true },
 );
 ```
 

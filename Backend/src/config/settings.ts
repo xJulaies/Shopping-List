@@ -6,6 +6,7 @@ export const settings = {
   PORT: process.env.PORT,
   BASE_URL: process.env.BASE_URL,
   MONGODB_URL: process.env.MONGODB_URL,
+  CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
   CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
 };
 
@@ -14,6 +15,7 @@ export const validateRuntimeSettings = () => {
     ["PORT", settings.PORT],
     ["BASE_URL", settings.BASE_URL],
     ["MONGODB_URL", settings.MONGODB_URL],
+    ["CLERK_PUBLISHABLE_KEY", settings.CLERK_PUBLISHABLE_KEY],
     ["CLERK_SECRET_KEY", settings.CLERK_SECRET_KEY],
   ].filter(([, value]) => !value);
 

@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+﻿import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { setActionFeedback } from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
@@ -6,9 +6,15 @@ import { useUpdateItem } from "../hooks/useItemMutations";
 import { ItemForm } from "./ItemForm";
 import type { CreateShoppingItemInput } from "../types/item";
 
-export function EditItemPage({ itemId }: { itemId: string }) {
+export function EditItemPage({
+  listId,
+  itemId,
+}: {
+  listId: string;
+  itemId: string;
+}) {
   const navigate = useNavigate();
-  const { data: item, isLoading, isError } = useItem(itemId);
+  const { data: item, isLoading, isError } = useItem(listId, itemId);
   const updateItem = useUpdateItem();
   const [error, setError] = useState<string | null>(null);
 
@@ -32,13 +38,13 @@ export function EditItemPage({ itemId }: { itemId: string }) {
   function handleSubmit(values: CreateShoppingItemInput) {
     setError(null);
     updateItem.mutate(
-      { id: itemId, data: values },
+      { listId, id: itemId, data: values },
       {
         onSuccess: () => {
           setActionFeedback("Änderungen wurden erfolgreich gespeichert.");
           navigate({
-            to: "/items/$itemId",
-            params: { itemId },
+            to: "/lists/$listId/items/$itemId",
+            params: { listId, itemId },
           });
         },
         onError: () => {
