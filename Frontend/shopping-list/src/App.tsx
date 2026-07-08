@@ -1,13 +1,14 @@
-import "./App.css";
-
-// Import the generated route tree
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { useAuth } from "@clerk/clerk-react";
 import { routeTree } from "./routeTree.gen";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: {
+    auth: undefined!,
+  },
+});
 
-// Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
@@ -15,10 +16,18 @@ declare module "@tanstack/react-router" {
 }
 
 function App() {
+  const auth = useAuth();
+
+  if (!auth.isLoaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="loading loading-spinner loading-lg" />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <RouterProvider router={router} />
-    </>
+    <RouterProvider router={router} context={{ auth }} />
   );
 }
 

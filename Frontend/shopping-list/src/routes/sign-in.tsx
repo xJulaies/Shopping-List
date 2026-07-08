@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SignInPage } from "../features/auth/sign-in/SignInPage";
+import { SignIn } from "@clerk/clerk-react";
 
 export const Route = createFileRoute("/sign-in")({
-  component: SignInPage,
+  component: () => (
+    <div className="flex items-center justify-center min-h-[70vh]">
+      <SignIn redirectUrl="/dashboard" signUpUrl="/sign-up" />
+    </div>
+  ),
 });
