@@ -1,0 +1,1 @@
+{"version":3,"file":"createError.d.ts","sourceRoot":"","sources":["../../../src/lib/error-handling/createError.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,qBAAqB,CAAC;AAEvD,MAAM,MAAM,YAAY,GAAG,KAAK,GAAG;IAAE,MAAM,EAAE,WAAW,CAAA;CAAE,CAAC;AAE3D,eAAO,MAAM,WAAW,GAAI,QAAQ,WAAW,EAAE,SAAS,MAAM,iBAK/D,CAAC"}

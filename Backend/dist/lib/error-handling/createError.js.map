@@ -1,0 +1,1 @@
+{"version":3,"file":"createError.js","sourceRoot":"","sources":["../../../src/lib/error-handling/createError.ts"],"names":[],"mappings":";;;AAIO,MAAM,WAAW,GAAG,CAAC,MAAmB,EAAE,OAAe,EAAE,EAAE;IAClE,MAAM,KAAK,GAAG,IAAI,KAAK,CAAC,OAAO,CAAiB,CAAC;IACjD,KAAK,CAAC,MAAM,GAAG,MAAM,CAAC;IAEtB,OAAO,KAAK,CAAC;AACf,CAAC,CAAC;AALW,QAAA,WAAW,eAKtB"}
