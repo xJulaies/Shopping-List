@@ -1,10 +1,12 @@
 ﻿import { Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/shared/components/ConfirmDialog";
 import {
+  clearActionFeedback,
+  clearItemJustCreated,
+  readActionFeedback,
+  readItemJustCreated,
   setActionFeedback,
-  takeActionFeedback,
-  takeItemJustCreated,
 } from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
 import { useDeleteItem } from "../hooks/useItemMutations";
@@ -19,9 +21,14 @@ export function ItemDetails({
   const { data: item, isLoading, isError } = useItem(listId, itemId);
   const deleteItem = useDeleteItem();
   const navigate = useNavigate();
-  const [feedback, setFeedback] = useState(() => takeActionFeedback());
-  const [wasJustCreated] = useState(() => takeItemJustCreated());
+  const [feedback, setFeedback] = useState(() => readActionFeedback());
+  const [wasJustCreated] = useState(() => readItemJustCreated());
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    clearActionFeedback();
+    clearItemJustCreated();
+  }, []);
 
   if (isLoading) {
     return (

@@ -24,7 +24,7 @@ export type ItemStore =
 
 export interface ShoppingItem {
   id: string;
-  listId?: string;
+  listId: string;
   title: string;
   description: string;
   category: ItemCategory;
@@ -40,7 +40,7 @@ export interface ShoppingItem {
 
 export type CreateShoppingItemInput = Omit<
   ShoppingItem,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "listId" | "createdAt" | "updatedAt"
 >;
 
 export type UpdateShoppingItemInput = Partial<CreateShoppingItemInput>;

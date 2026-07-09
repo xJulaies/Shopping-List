@@ -43,7 +43,7 @@ function AboutPage() {
         <Link to="/dashboard" className="btn btn-primary">
           Zum Dashboard
         </Link>
-        <Link to="/items" className="btn btn-outline">
+        <Link to="/lists" className="btn btn-outline">
           Einkaufsliste ansehen
         </Link>
       </div>

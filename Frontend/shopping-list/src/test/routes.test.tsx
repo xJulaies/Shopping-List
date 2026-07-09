@@ -66,7 +66,7 @@ describe("routes", () => {
   });
 
   it("redirects protected routes to sign in when signed out", async () => {
-    renderRoute("/items", false);
+    renderRoute("/lists", false);
 
     expect(await screen.findByText("Clerk Sign In")).toBeInTheDocument();
   });

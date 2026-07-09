@@ -18,11 +18,7 @@ import { Route as SignUpSplatRouteImport } from './routes/sign-up.$'
 import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedListsIndexRouteImport } from './routes/_authenticated/lists/index'
-import { Route as AuthenticatedItemsIndexRouteImport } from './routes/_authenticated/items/index'
 import { Route as AuthenticatedListsListIdRouteImport } from './routes/_authenticated/lists/$listId'
-import { Route as AuthenticatedItemsNewRouteImport } from './routes/_authenticated/items/new'
-import { Route as AuthenticatedItemsItemIdRouteImport } from './routes/_authenticated/items/$itemId'
-import { Route as AuthenticatedItemsItemIdEditRouteImport } from './routes/_authenticated/items/$itemId/edit'
 import { Route as AuthenticatedListsListIdItemsNewRouteImport } from './routes/_authenticated/lists/$listId/items/new'
 import { Route as AuthenticatedListsListIdItemsItemIdRouteImport } from './routes/_authenticated/lists/$listId/items/$itemId'
 import { Route as AuthenticatedListsListIdItemsItemIdEditRouteImport } from './routes/_authenticated/lists/$listId/items/$itemId/edit'
@@ -71,33 +67,11 @@ const AuthenticatedListsIndexRoute = AuthenticatedListsIndexRouteImport.update({
   path: '/lists/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexRouteImport.update({
-  id: '/items/',
-  path: '/items/',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedListsListIdRoute =
   AuthenticatedListsListIdRouteImport.update({
     id: '/lists/$listId',
     path: '/lists/$listId',
     getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedItemsNewRoute = AuthenticatedItemsNewRouteImport.update({
-  id: '/items/new',
-  path: '/items/new',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedItemsItemIdRoute =
-  AuthenticatedItemsItemIdRouteImport.update({
-    id: '/items/$itemId',
-    path: '/items/$itemId',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedItemsItemIdEditRoute =
-  AuthenticatedItemsItemIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => AuthenticatedItemsItemIdRoute,
   } as any)
 const AuthenticatedListsListIdItemsNewRoute =
   AuthenticatedListsListIdItemsNewRouteImport.update({
@@ -126,12 +100,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
-  '/items/$itemId': typeof AuthenticatedItemsItemIdRouteWithChildren
-  '/items/new': typeof AuthenticatedItemsNewRoute
   '/lists/$listId': typeof AuthenticatedListsListIdRouteWithChildren
-  '/items/': typeof AuthenticatedItemsIndexRoute
   '/lists/': typeof AuthenticatedListsIndexRoute
-  '/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
   '/lists/$listId/items/$itemId': typeof AuthenticatedListsListIdItemsItemIdRouteWithChildren
   '/lists/$listId/items/new': typeof AuthenticatedListsListIdItemsNewRoute
   '/lists/$listId/items/$itemId/edit': typeof AuthenticatedListsListIdItemsItemIdEditRoute
@@ -144,12 +114,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
-  '/items/$itemId': typeof AuthenticatedItemsItemIdRouteWithChildren
-  '/items/new': typeof AuthenticatedItemsNewRoute
   '/lists/$listId': typeof AuthenticatedListsListIdRouteWithChildren
-  '/items': typeof AuthenticatedItemsIndexRoute
   '/lists': typeof AuthenticatedListsIndexRoute
-  '/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
   '/lists/$listId/items/$itemId': typeof AuthenticatedListsListIdItemsItemIdRouteWithChildren
   '/lists/$listId/items/new': typeof AuthenticatedListsListIdItemsNewRoute
   '/lists/$listId/items/$itemId/edit': typeof AuthenticatedListsListIdItemsItemIdEditRoute
@@ -164,12 +130,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
-  '/_authenticated/items/$itemId': typeof AuthenticatedItemsItemIdRouteWithChildren
-  '/_authenticated/items/new': typeof AuthenticatedItemsNewRoute
   '/_authenticated/lists/$listId': typeof AuthenticatedListsListIdRouteWithChildren
-  '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
   '/_authenticated/lists/': typeof AuthenticatedListsIndexRoute
-  '/_authenticated/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
   '/_authenticated/lists/$listId/items/$itemId': typeof AuthenticatedListsListIdItemsItemIdRouteWithChildren
   '/_authenticated/lists/$listId/items/new': typeof AuthenticatedListsListIdItemsNewRoute
   '/_authenticated/lists/$listId/items/$itemId/edit': typeof AuthenticatedListsListIdItemsItemIdEditRoute
@@ -184,12 +146,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/sign-in/$'
     | '/sign-up/$'
-    | '/items/$itemId'
-    | '/items/new'
     | '/lists/$listId'
-    | '/items/'
     | '/lists/'
-    | '/items/$itemId/edit'
     | '/lists/$listId/items/$itemId'
     | '/lists/$listId/items/new'
     | '/lists/$listId/items/$itemId/edit'
@@ -202,12 +160,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/sign-in/$'
     | '/sign-up/$'
-    | '/items/$itemId'
-    | '/items/new'
     | '/lists/$listId'
-    | '/items'
     | '/lists'
-    | '/items/$itemId/edit'
     | '/lists/$listId/items/$itemId'
     | '/lists/$listId/items/new'
     | '/lists/$listId/items/$itemId/edit'
@@ -221,12 +175,8 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/sign-in/$'
     | '/sign-up/$'
-    | '/_authenticated/items/$itemId'
-    | '/_authenticated/items/new'
     | '/_authenticated/lists/$listId'
-    | '/_authenticated/items/'
     | '/_authenticated/lists/'
-    | '/_authenticated/items/$itemId/edit'
     | '/_authenticated/lists/$listId/items/$itemId'
     | '/_authenticated/lists/$listId/items/new'
     | '/_authenticated/lists/$listId/items/$itemId/edit'
@@ -305,40 +255,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/items/': {
-      id: '/_authenticated/items/'
-      path: '/items'
-      fullPath: '/items/'
-      preLoaderRoute: typeof AuthenticatedItemsIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/lists/$listId': {
       id: '/_authenticated/lists/$listId'
       path: '/lists/$listId'
       fullPath: '/lists/$listId'
       preLoaderRoute: typeof AuthenticatedListsListIdRouteImport
       parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/items/new': {
-      id: '/_authenticated/items/new'
-      path: '/items/new'
-      fullPath: '/items/new'
-      preLoaderRoute: typeof AuthenticatedItemsNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/items/$itemId': {
-      id: '/_authenticated/items/$itemId'
-      path: '/items/$itemId'
-      fullPath: '/items/$itemId'
-      preLoaderRoute: typeof AuthenticatedItemsItemIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/items/$itemId/edit': {
-      id: '/_authenticated/items/$itemId/edit'
-      path: '/edit'
-      fullPath: '/items/$itemId/edit'
-      preLoaderRoute: typeof AuthenticatedItemsItemIdEditRouteImport
-      parentRoute: typeof AuthenticatedItemsItemIdRoute
     }
     '/_authenticated/lists/$listId/items/new': {
       id: '/_authenticated/lists/$listId/items/new'
@@ -363,20 +285,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AuthenticatedItemsItemIdRouteChildren {
-  AuthenticatedItemsItemIdEditRoute: typeof AuthenticatedItemsItemIdEditRoute
-}
-
-const AuthenticatedItemsItemIdRouteChildren: AuthenticatedItemsItemIdRouteChildren =
-  {
-    AuthenticatedItemsItemIdEditRoute: AuthenticatedItemsItemIdEditRoute,
-  }
-
-const AuthenticatedItemsItemIdRouteWithChildren =
-  AuthenticatedItemsItemIdRoute._addFileChildren(
-    AuthenticatedItemsItemIdRouteChildren,
-  )
 
 interface AuthenticatedListsListIdItemsItemIdRouteChildren {
   AuthenticatedListsListIdItemsItemIdEditRoute: typeof AuthenticatedListsListIdItemsItemIdEditRoute
@@ -413,19 +321,13 @@ const AuthenticatedListsListIdRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedItemsItemIdRoute: typeof AuthenticatedItemsItemIdRouteWithChildren
-  AuthenticatedItemsNewRoute: typeof AuthenticatedItemsNewRoute
   AuthenticatedListsListIdRoute: typeof AuthenticatedListsListIdRouteWithChildren
-  AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
   AuthenticatedListsIndexRoute: typeof AuthenticatedListsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedItemsItemIdRoute: AuthenticatedItemsItemIdRouteWithChildren,
-  AuthenticatedItemsNewRoute: AuthenticatedItemsNewRoute,
   AuthenticatedListsListIdRoute: AuthenticatedListsListIdRouteWithChildren,
-  AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
   AuthenticatedListsIndexRoute: AuthenticatedListsIndexRoute,
 }
 

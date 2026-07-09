@@ -1,7 +1,40 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DELETE_shoppingList = exports.PATCH_updateShoppingList = exports.POST_createShoppingList = exports.GET_shoppingList = exports.GET_allShoppingLists = void 0;
-const mongoose_1 = require("mongoose");
+const mongoose_1 = __importStar(require("mongoose"));
 const createError_1 = require("../../lib/error-handling/createError");
 const shoppingList_model_1 = require("./shoppingList.model");
 const shoppingItem_model_1 = require("../shopping-items/shoppingItem.model");
@@ -99,14 +132,43 @@ const DELETE_shoppingList = async (req, res, next) => {
         if (!isValidListId(listId)) {
             return next((0, createError_1.createError)(404, "Shopping list not found"));
         }
-        const deletedList = await shoppingList_model_1.ShoppingListModel.findOneAndDelete({
+        const list = await shoppingList_model_1.ShoppingListModel.findOne({
             _id: listId,
             userId: authUserId,
         });
-        if (!deletedList) {
+        if (!list) {
             return next((0, createError_1.createError)(404, "Shopping list not found"));
         }
-        await shoppingItem_model_1.ShoppingItemModel.deleteMany({ listId, userId: authUserId });
+        const database = mongoose_1.default.connection.db;
+        const hello = database
+            ? await database.admin().command({ hello: 1 })
+            : undefined;
+        const supportsTransactions = Boolean(hello?.setName || hello?.msg === "isdbgrid");
+        if (supportsTransactions) {
+            const session = await mongoose_1.default.startSession();
+            try {
+                await session.withTransaction(async () => {
+                    await shoppingItem_model_1.ShoppingItemModel.deleteMany({
+                        listId,
+                        userId: authUserId,
+                    }).session(session);
+                    await shoppingList_model_1.ShoppingListModel.deleteOne({
+                        _id: listId,
+                        userId: authUserId,
+                    }).session(session);
+                });
+            }
+            finally {
+                await session.endSession();
+            }
+        }
+        else {
+            await shoppingItem_model_1.ShoppingItemModel.deleteMany({ listId, userId: authUserId });
+            await shoppingList_model_1.ShoppingListModel.deleteOne({
+                _id: listId,
+                userId: authUserId,
+            });
+        }
         return res.status(204).send();
     }
     catch (error) {

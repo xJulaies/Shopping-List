@@ -1,7 +1,10 @@
 ﻿import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useListPreferences } from "@/context/ListPreferencesContext";
-import { takeActionFeedback } from "@/shared/utils/actionFeedback";
+import {
+  clearActionFeedback,
+  readActionFeedback,
+} from "@/shared/utils/actionFeedback";
 import { useItems } from "../hooks/useItems";
 import { useShoppingList } from "../hooks/useLists";
 import { ItemList } from "./ItemList";
@@ -44,7 +47,7 @@ function sortItems(items: ShoppingItem[], sortBy: string) {
 export function ShoppingListOverview({ listId }: { listId: string }) {
   const { data: list } = useShoppingList(listId);
   const { data: items, isLoading, isError } = useItems(listId);
-  const [feedback, setFeedback] = useState(() => takeActionFeedback());
+  const [feedback, setFeedback] = useState(() => readActionFeedback());
   const {
     search,
     status,
@@ -58,6 +61,10 @@ export function ShoppingListOverview({ listId }: { listId: string }) {
     setSortBy,
     resetPreferences,
   } = useListPreferences();
+
+  useEffect(() => {
+    clearActionFeedback();
+  }, []);
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();

@@ -1,5 +1,5 @@
 ﻿import { Link } from "@tanstack/react-router";
-import { useLists } from "../shopping-list/hooks/useLists";
+import { useLists } from "@/features/shopping-list/hooks/useLists";
 
 export function DashboardPage() {
   const { data: lists = [], isLoading, isError } = useLists();

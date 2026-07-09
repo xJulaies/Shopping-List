@@ -1,4 +1,11 @@
 import { HydratedDocument, model, Schema } from "mongoose";
+import {
+  SHOPPING_ITEM_CATEGORIES,
+  SHOPPING_ITEM_PRIORITIES,
+  SHOPPING_ITEM_STATUSES,
+  SHOPPING_ITEM_STORES,
+  SHOPPING_ITEM_UNITS,
+} from "./shoppingItem.constants";
 
 export type TShoppingItem = {
   userId: string;
@@ -50,11 +57,13 @@ const shoppingItemSchema = new Schema<TShoppingItem>(
       type: String,
       required: true,
       trim: true,
+      enum: SHOPPING_ITEM_CATEGORIES,
     },
     status: {
       type: String,
       required: true,
       trim: true,
+      enum: SHOPPING_ITEM_STATUSES,
     },
     quantity: {
       type: Number,
@@ -65,25 +74,18 @@ const shoppingItemSchema = new Schema<TShoppingItem>(
       type: String,
       required: true,
       trim: true,
+      enum: SHOPPING_ITEM_UNITS,
     },
     priority: {
       type: String,
       required: true,
       trim: true,
+      enum: SHOPPING_ITEM_PRIORITIES,
     },
     store: {
       type: String,
       trim: true,
-      enum: [
-        "Kaufland",
-        "Lidl",
-        "Rewe",
-        "Edeka",
-        "Penny",
-        "Aldi",
-        "Netto",
-        "Famila",
-      ],
+      enum: SHOPPING_ITEM_STORES,
     },
     price: {
       type: Number,

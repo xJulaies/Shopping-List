@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/clerk-react";
 import { createItem, deleteItem, updateItem } from "../services/itemService";
+import { shoppingQueryKeys } from "../queryKeys";
 import type {
   CreateShoppingItemInput,
   ShoppingItem,
@@ -9,7 +10,7 @@ import type {
 
 export function useCreateItem() {
   const queryClient = useQueryClient();
-  const { getToken } = useAuth();
+  const { getToken, userId } = useAuth();
 
   return useMutation<
     ShoppingItem,
@@ -18,15 +19,18 @@ export function useCreateItem() {
   >({
     mutationFn: async ({ listId, data }) =>
       createItem(listId, data, await getToken()),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lists"] });
+    onSuccess: (_createdItem, variables) => {
+      if (!userId) return;
+      queryClient.invalidateQueries({
+        queryKey: shoppingQueryKeys.items(userId, variables.listId),
+      });
     },
   });
 }
 
 export function useUpdateItem() {
   const queryClient = useQueryClient();
-  const { getToken } = useAuth();
+  const { getToken, userId } = useAuth();
 
   return useMutation<
     ShoppingItem,
@@ -36,19 +40,20 @@ export function useUpdateItem() {
     mutationFn: async ({ listId, id, data }) =>
       updateItem(listId, id, data, await getToken()),
     onSuccess: (updatedItem, variables) => {
+      if (!userId) return;
       queryClient.setQueryData(
-        ["lists", variables.listId, "items", variables.id],
+        shoppingQueryKeys.item(userId, variables.listId, variables.id),
         updatedItem,
       );
       queryClient.setQueryData<ShoppingItem[]>(
-        ["lists", variables.listId, "items"],
+        shoppingQueryKeys.items(userId, variables.listId),
         (items) =>
         items?.map((item) =>
           item.id === variables.id ? updatedItem : item,
         ),
       );
       queryClient.invalidateQueries({
-        queryKey: ["lists", variables.listId, "items"],
+        queryKey: shoppingQueryKeys.items(userId, variables.listId),
       });
     },
   });
@@ -56,14 +61,15 @@ export function useUpdateItem() {
 
 export function useDeleteItem() {
   const queryClient = useQueryClient();
-  const { getToken } = useAuth();
+  const { getToken, userId } = useAuth();
 
   return useMutation<void, Error, { listId: string; id: string }>({
     mutationFn: async ({ listId, id }) =>
       deleteItem(listId, id, await getToken()),
     onSuccess: (_data, variables) => {
+      if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: ["lists", variables.listId, "items"],
+        queryKey: shoppingQueryKeys.items(userId, variables.listId),
       });
     },
   });

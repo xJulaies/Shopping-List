@@ -3,6 +3,7 @@
 export const mockItems: ShoppingItem[] = [
   {
     id: "1",
+    listId: "mock-list",
     title: "Milch, 1,5%",
     description: "Bio wenn möglich",
     category: "Milchprodukte",
@@ -17,6 +18,7 @@ export const mockItems: ShoppingItem[] = [
   },
   {
     id: "2",
+    listId: "mock-list",
     title: "Bananen",
     description: "Reif, nicht grün",
     category: "Obst & Gemüse",
@@ -31,6 +33,7 @@ export const mockItems: ShoppingItem[] = [
   },
   {
     id: "3",
+    listId: "mock-list",
     title: "Kaffeebohnen",
     description: "Ganze Bohnen, mittlere Röstung",
     category: "Getränke",

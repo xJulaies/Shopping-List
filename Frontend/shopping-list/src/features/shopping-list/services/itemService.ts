@@ -5,11 +5,19 @@
 } from "../types/item";
 import { mockItems } from "../data/mockItems";
 
-const API_URL =
-  import.meta.env.MODE === "test" ? undefined : import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+const USE_LOCAL_STORAGE = import.meta.env.MODE === "test";
 const STORAGE_KEY = "shopping-list-items";
 
 type AuthToken = string | null | undefined;
+
+function getApiUrl() {
+  if (!API_URL) {
+    throw new Error("VITE_API_URL fehlt in der Frontend-Konfiguration");
+  }
+
+  return API_URL;
+}
 
 function getStoredItems(): ShoppingItem[] {
   const storedItems = window.localStorage.getItem(STORAGE_KEY);
@@ -43,23 +51,15 @@ function getJsonHeaders(token: AuthToken) {
   };
 }
 
-export async function getItems(): Promise<ShoppingItem[]> {
-  if (!API_URL) {
-    return getStoredItems();
-  }
-
-  throw new Error("listId is required");
-}
-
 export async function getItemsByList(
   listId: string,
   token?: AuthToken,
 ): Promise<ShoppingItem[]> {
-  if (!API_URL) {
-    return getStoredItems();
+  if (USE_LOCAL_STORAGE) {
+    return getStoredItems().filter((item) => item.listId === listId);
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}/items`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}/items`, {
     headers: getAuthHeaders(token),
   });
 
@@ -71,16 +71,14 @@ export async function getItemsByList(
 }
 
 export async function getItemById(
-  listIdOrId: string,
-  idOrToken?: string | AuthToken,
+  listId: string,
+  id: string,
   token?: AuthToken,
 ): Promise<ShoppingItem> {
-  const listId = typeof idOrToken === "string" ? listIdOrId : undefined;
-  const id = typeof idOrToken === "string" ? idOrToken : listIdOrId;
-  const authToken = typeof idOrToken === "string" ? token : idOrToken;
-
-  if (!API_URL) {
-    const item = getStoredItems().find((storedItem) => storedItem.id === id);
+  if (USE_LOCAL_STORAGE) {
+    const item = getStoredItems().find(
+      (storedItem) => storedItem.listId === listId && storedItem.id === id,
+    );
 
     if (!item) {
       throw new Error("Eintrag nicht gefunden");
@@ -89,8 +87,8 @@ export async function getItemById(
     return item;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}/items/${id}`, {
-    headers: getAuthHeaders(authToken),
+  const response = await fetch(`${getApiUrl()}/lists/${listId}/items/${id}`, {
+    headers: getAuthHeaders(token),
   });
 
   if (!response.ok) {
@@ -101,34 +99,28 @@ export async function getItemById(
 }
 
 export async function createItem(
-  listIdOrData: string | CreateShoppingItemInput,
-  dataOrToken?: CreateShoppingItemInput | AuthToken,
+  listId: string,
+  data: CreateShoppingItemInput,
   token?: AuthToken,
 ): Promise<ShoppingItem> {
-  const listId = typeof listIdOrData === "string" ? listIdOrData : undefined;
-  const data =
-    typeof listIdOrData === "string"
-      ? (dataOrToken as CreateShoppingItemInput)
-      : listIdOrData;
-  const authToken =
-    typeof listIdOrData === "string" ? token : (dataOrToken as AuthToken);
   const now = new Date().toISOString();
-  const newItem = {
+  const newItem: ShoppingItem = {
     ...data,
     id: crypto.randomUUID(),
+    listId,
     createdAt: now,
     updatedAt: now,
   };
 
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const items = getStoredItems();
     saveStoredItems([...items, newItem]);
     return newItem;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}/items`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}/items`, {
     method: "POST",
-    headers: getJsonHeaders(authToken),
+    headers: getJsonHeaders(token),
     body: JSON.stringify(data),
   });
 
@@ -140,24 +132,18 @@ export async function createItem(
 }
 
 export async function updateItem(
-  listIdOrId: string,
-  idOrData: string | UpdateShoppingItemInput,
-  dataOrToken?: UpdateShoppingItemInput | AuthToken,
+  listId: string,
+  id: string,
+  data: UpdateShoppingItemInput,
   token?: AuthToken,
 ): Promise<ShoppingItem> {
-  const listId = typeof idOrData === "string" ? listIdOrId : undefined;
-  const id = typeof idOrData === "string" ? idOrData : listIdOrId;
-  const data =
-    typeof idOrData === "string"
-      ? (dataOrToken as UpdateShoppingItemInput)
-      : idOrData;
-  const authToken =
-    typeof idOrData === "string" ? token : (dataOrToken as AuthToken);
   const updatedAt = new Date().toISOString();
 
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const items = getStoredItems();
-    const item = items.find((storedItem) => storedItem.id === id);
+    const item = items.find(
+      (storedItem) => storedItem.listId === listId && storedItem.id === id,
+    );
 
     if (!item) {
       throw new Error("Eintrag nicht gefunden");
@@ -166,16 +152,18 @@ export async function updateItem(
     const updatedItem = { ...item, ...data, updatedAt };
     saveStoredItems(
       items.map((storedItem) =>
-        storedItem.id === id ? updatedItem : storedItem,
+        storedItem.listId === listId && storedItem.id === id
+          ? updatedItem
+          : storedItem,
       ),
     );
 
     return updatedItem;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}/items/${id}`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}/items/${id}`, {
     method: "PATCH",
-    headers: getJsonHeaders(authToken),
+    headers: getJsonHeaders(token),
     body: JSON.stringify(data),
   });
 
@@ -187,23 +175,21 @@ export async function updateItem(
 }
 
 export async function deleteItem(
-  listIdOrId: string,
-  idOrToken?: string | AuthToken,
+  listId: string,
+  id: string,
   token?: AuthToken,
 ): Promise<void> {
-  const listId = typeof idOrToken === "string" ? listIdOrId : undefined;
-  const id = typeof idOrToken === "string" ? idOrToken : listIdOrId;
-  const authToken = typeof idOrToken === "string" ? token : idOrToken;
-
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const items = getStoredItems();
-    saveStoredItems(items.filter((item) => item.id !== id));
+    saveStoredItems(
+      items.filter((item) => item.listId !== listId || item.id !== id),
+    );
     return;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}/items/${id}`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}/items/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(authToken),
+    headers: getAuthHeaders(token),
   });
 
   if (!response.ok) {

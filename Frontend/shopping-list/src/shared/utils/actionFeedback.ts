@@ -5,18 +5,22 @@ export function setActionFeedback(message: string) {
   window.sessionStorage.setItem(FEEDBACK_KEY, message);
 }
 
-export function takeActionFeedback() {
-  const message = window.sessionStorage.getItem(FEEDBACK_KEY);
+export function readActionFeedback() {
+  return window.sessionStorage.getItem(FEEDBACK_KEY);
+}
+
+export function clearActionFeedback() {
   window.sessionStorage.removeItem(FEEDBACK_KEY);
-  return message;
 }
 
 export function markItemAsJustCreated() {
   window.sessionStorage.setItem(ITEM_CREATED_KEY, "true");
 }
 
-export function takeItemJustCreated() {
-  const wasJustCreated = window.sessionStorage.getItem(ITEM_CREATED_KEY) === "true";
+export function readItemJustCreated() {
+  return window.sessionStorage.getItem(ITEM_CREATED_KEY) === "true";
+}
+
+export function clearItemJustCreated() {
   window.sessionStorage.removeItem(ITEM_CREATED_KEY);
-  return wasJustCreated;
 }

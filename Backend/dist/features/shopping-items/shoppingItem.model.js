@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShoppingItemModel = void 0;
 const mongoose_1 = require("mongoose");
+const shoppingItem_constants_1 = require("./shoppingItem.constants");
 const shoppingItemSchema = new mongoose_1.Schema({
     userId: {
         type: String,
@@ -33,11 +34,13 @@ const shoppingItemSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         trim: true,
+        enum: shoppingItem_constants_1.SHOPPING_ITEM_CATEGORIES,
     },
     status: {
         type: String,
         required: true,
         trim: true,
+        enum: shoppingItem_constants_1.SHOPPING_ITEM_STATUSES,
     },
     quantity: {
         type: Number,
@@ -48,25 +51,18 @@ const shoppingItemSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         trim: true,
+        enum: shoppingItem_constants_1.SHOPPING_ITEM_UNITS,
     },
     priority: {
         type: String,
         required: true,
         trim: true,
+        enum: shoppingItem_constants_1.SHOPPING_ITEM_PRIORITIES,
     },
     store: {
         type: String,
         trim: true,
-        enum: [
-            "Kaufland",
-            "Lidl",
-            "Rewe",
-            "Edeka",
-            "Penny",
-            "Aldi",
-            "Netto",
-            "Famila",
-        ],
+        enum: shoppingItem_constants_1.SHOPPING_ITEM_STORES,
     },
     price: {
         type: Number,

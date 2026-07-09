@@ -2,16 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateShoppingItemSchema = exports.createShoppingItemSchema = void 0;
 const zod_1 = require("zod");
-const shoppingItemStoreSchema = zod_1.z.enum([
-    "Kaufland",
-    "Lidl",
-    "Rewe",
-    "Edeka",
-    "Penny",
-    "Aldi",
-    "Netto",
-    "Famila",
-]);
+const shoppingItem_constants_1 = require("./shoppingItem.constants");
+const shoppingItemCategorySchema = zod_1.z.enum(shoppingItem_constants_1.SHOPPING_ITEM_CATEGORIES);
+const shoppingItemStatusSchema = zod_1.z.enum(shoppingItem_constants_1.SHOPPING_ITEM_STATUSES);
+const shoppingItemUnitSchema = zod_1.z.enum(shoppingItem_constants_1.SHOPPING_ITEM_UNITS);
+const shoppingItemPrioritySchema = zod_1.z.enum(shoppingItem_constants_1.SHOPPING_ITEM_PRIORITIES);
+const shoppingItemStoreSchema = zod_1.z.enum(shoppingItem_constants_1.SHOPPING_ITEM_STORES);
 exports.createShoppingItemSchema = zod_1.z.object({
     title: zod_1.z
         .string()
@@ -23,11 +19,11 @@ exports.createShoppingItemSchema = zod_1.z.object({
         .trim()
         .min(5, "Description must be at least 5 characters long")
         .max(300, "Description must be 300 characters or less"),
-    category: zod_1.z.string().trim().min(1, "Category is required"),
-    status: zod_1.z.string().trim().min(1, "Status is required"),
+    category: shoppingItemCategorySchema,
+    status: shoppingItemStatusSchema,
     quantity: zod_1.z.coerce.number().positive("Quantity must be greater than 0"),
-    unit: zod_1.z.string().trim().min(1, "Unit is required"),
-    priority: zod_1.z.string().trim().min(1, "Priority is required"),
+    unit: shoppingItemUnitSchema,
+    priority: shoppingItemPrioritySchema,
     store: shoppingItemStoreSchema.optional(),
     price: zod_1.z.coerce.number().nonnegative("Price must not be negative").optional(),
 });

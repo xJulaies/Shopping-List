@@ -27,14 +27,14 @@ export function HeroSection() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/items" className="btn btn-primary">
+            <Link to="/lists" hash="new-list" className="btn btn-primary">
               Liste erstellen
             </Link>
             <Link
-              to="/items/new"
+              to="/lists"
               className="btn border-emerald-700 bg-transparent text-emerald-50 hover:border-amber-300 hover:bg-emerald-900"
             >
-              Eintrag hinzufügen
+              Einkaufslisten öffnen
             </Link>
           </div>
 

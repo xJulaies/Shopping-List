@@ -1,5 +1,5 @@
 import { Request, RequestHandler } from "express";
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { createError } from "../../lib/error-handling/createError";
 import { TAuthenticatedRequest } from "../../middlewares/requireAuth";
 import {
@@ -128,16 +128,47 @@ export const DELETE_shoppingList: RequestHandler = async (req, res, next) => {
       return next(createError(404, "Shopping list not found"));
     }
 
-    const deletedList = await ShoppingListModel.findOneAndDelete({
+    const list = await ShoppingListModel.findOne({
       _id: listId,
       userId: authUserId,
     });
 
-    if (!deletedList) {
+    if (!list) {
       return next(createError(404, "Shopping list not found"));
     }
 
-    await ShoppingItemModel.deleteMany({ listId, userId: authUserId });
+    const database = mongoose.connection.db;
+    const hello = database
+      ? await database.admin().command({ hello: 1 })
+      : undefined;
+    const supportsTransactions = Boolean(
+      hello?.setName || hello?.msg === "isdbgrid",
+    );
+
+    if (supportsTransactions) {
+      const session = await mongoose.startSession();
+
+      try {
+        await session.withTransaction(async () => {
+          await ShoppingItemModel.deleteMany({
+            listId,
+            userId: authUserId,
+          }).session(session);
+          await ShoppingListModel.deleteOne({
+            _id: listId,
+            userId: authUserId,
+          }).session(session);
+        });
+      } finally {
+        await session.endSession();
+      }
+    } else {
+      await ShoppingItemModel.deleteMany({ listId, userId: authUserId });
+      await ShoppingListModel.deleteOne({
+        _id: listId,
+        userId: authUserId,
+      });
+    }
 
     return res.status(204).send();
   } catch (error) {

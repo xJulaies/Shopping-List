@@ -214,10 +214,21 @@ export function ItemForm({
   isSubmitting = false,
   submitLabel = "Speichern",
 }: ItemFormProps) {
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: initialValues ?? defaultValues,
     onSubmit: async ({ value }) => {
-      onSubmit(value);
+      const result = itemSchema.safeParse(value);
+
+      if (!result.success) {
+        setSubmitError(
+          result.error.issues[0]?.message ?? "Bitte prüfe deine Eingaben.",
+        );
+        return;
+      }
+
+      setSubmitError(null);
+      onSubmit(result.data);
     },
   });
 
@@ -230,6 +241,12 @@ export function ItemForm({
       }}
       className="flex flex-col gap-4 max-w-xl"
     >
+      {submitError && (
+        <div className="alert alert-error" role="alert">
+          <span>{submitError}</span>
+        </div>
+      )}
+
       {/* Title */}
       <form.Field
         name="title"

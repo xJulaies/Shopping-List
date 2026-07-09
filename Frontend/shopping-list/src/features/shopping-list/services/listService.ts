@@ -4,11 +4,19 @@
   UpdateShoppingListInput,
 } from "../types/list";
 
-const API_URL =
-  import.meta.env.MODE === "test" ? undefined : import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+const USE_LOCAL_STORAGE = import.meta.env.MODE === "test";
 const STORAGE_KEY = "shopping-lists";
 
 type AuthToken = string | null | undefined;
+
+function getApiUrl() {
+  if (!API_URL) {
+    throw new Error("VITE_API_URL fehlt in der Frontend-Konfiguration");
+  }
+
+  return API_URL;
+}
 
 function getStoredLists(): ShoppingList[] {
   const storedLists = window.localStorage.getItem(STORAGE_KEY);
@@ -42,11 +50,11 @@ function getJsonHeaders(token: AuthToken) {
 }
 
 export async function getLists(token?: AuthToken): Promise<ShoppingList[]> {
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     return getStoredLists();
   }
 
-  const response = await fetch(`${API_URL}/lists`, {
+  const response = await fetch(`${getApiUrl()}/lists`, {
     headers: getAuthHeaders(token),
   });
 
@@ -61,7 +69,7 @@ export async function getListById(
   listId: string,
   token?: AuthToken,
 ): Promise<ShoppingList> {
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const list = getStoredLists().find((storedList) => storedList.id === listId);
 
     if (!list) {
@@ -71,7 +79,7 @@ export async function getListById(
     return list;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}`, {
     headers: getAuthHeaders(token),
   });
 
@@ -95,13 +103,13 @@ export async function createList(
     updatedAt: now,
   };
 
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const lists = getStoredLists();
     saveStoredLists([newList, ...lists]);
     return newList;
   }
 
-  const response = await fetch(`${API_URL}/lists`, {
+  const response = await fetch(`${getApiUrl()}/lists`, {
     method: "POST",
     headers: getJsonHeaders(token),
     body: JSON.stringify(data),
@@ -119,7 +127,7 @@ export async function updateList(
   data: UpdateShoppingListInput,
   token?: AuthToken,
 ): Promise<ShoppingList> {
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     const lists = getStoredLists();
     const list = lists.find((storedList) => storedList.id === listId);
 
@@ -141,7 +149,7 @@ export async function updateList(
     return updatedList;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}`, {
     method: "PATCH",
     headers: getJsonHeaders(token),
     body: JSON.stringify(data),
@@ -158,12 +166,12 @@ export async function deleteList(
   listId: string,
   token?: AuthToken,
 ): Promise<void> {
-  if (!API_URL) {
+  if (USE_LOCAL_STORAGE) {
     saveStoredLists(getStoredLists().filter((list) => list.id !== listId));
     return;
   }
 
-  const response = await fetch(`${API_URL}/lists/${listId}`, {
+  const response = await fetch(`${getApiUrl()}/lists/${listId}`, {
     method: "DELETE",
     headers: getAuthHeaders(token),
   });

@@ -3,7 +3,7 @@ import {
   createItem,
   deleteItem,
   getItemById,
-  getItems,
+  getItemsByList,
   updateItem,
 } from "./itemService";
 import type { CreateShoppingItemInput, ShoppingItem } from "../types/item";
@@ -12,6 +12,7 @@ const STORAGE_KEY = "shopping-list-items";
 
 const baseItem: ShoppingItem = {
   id: "item-1",
+  listId: "list-1",
   title: "Milch",
   description: "Bio Milch kaufen",
   category: "Milchprodukte",
@@ -46,8 +47,8 @@ describe("itemService", () => {
     window.localStorage.clear();
   });
 
-  it("loads mock items when localStorage is empty", async () => {
-    const items = await getItems();
+  it("loads mock items for their list when localStorage is empty", async () => {
+    const items = await getItemsByList("mock-list");
 
     expect(items.length).toBeGreaterThan(0);
     expect(window.localStorage.getItem(STORAGE_KEY)).not.toBeNull();
@@ -56,7 +57,7 @@ describe("itemService", () => {
   it("loads a single item by id", async () => {
     seedItems([baseItem]);
 
-    await expect(getItemById("item-1")).resolves.toMatchObject({
+    await expect(getItemById("list-1", "item-1")).resolves.toMatchObject({
       id: "item-1",
       title: "Milch",
     });
@@ -65,7 +66,7 @@ describe("itemService", () => {
   it("throws when an item id does not exist", async () => {
     seedItems([baseItem]);
 
-    await expect(getItemById("missing")).rejects.toThrow(
+    await expect(getItemById("list-1", "missing")).rejects.toThrow(
       "Eintrag nicht gefunden",
     );
   });
@@ -73,7 +74,7 @@ describe("itemService", () => {
   it("creates an item and stores it", async () => {
     seedItems([baseItem]);
 
-    const created = await createItem(createInput);
+    const created = await createItem("list-1", createInput);
     const stored = JSON.parse(
       window.localStorage.getItem(STORAGE_KEY) ?? "[]",
     ) as ShoppingItem[];
@@ -81,6 +82,7 @@ describe("itemService", () => {
     expect(created).toMatchObject({
       title: "Bananen",
       category: "Obst & Gemüse",
+      listId: "list-1",
     });
     expect(created.id).toBeTruthy();
     expect(stored).toHaveLength(2);
@@ -90,7 +92,7 @@ describe("itemService", () => {
   it("updates an item and keeps the id", async () => {
     seedItems([baseItem]);
 
-    const updated = await updateItem("item-1", {
+    const updated = await updateItem("list-1", "item-1", {
       status: "gekauft",
       quantity: 3,
     });
@@ -105,11 +107,26 @@ describe("itemService", () => {
   it("deletes an item from storage", async () => {
     seedItems([baseItem]);
 
-    await deleteItem("item-1");
+    await deleteItem("list-1", "item-1");
     const stored = JSON.parse(
       window.localStorage.getItem(STORAGE_KEY) ?? "[]",
     ) as ShoppingItem[];
 
     expect(stored).toHaveLength(0);
+  });
+
+  it("keeps items from different lists isolated", async () => {
+    seedItems([
+      baseItem,
+      { ...baseItem, id: "item-2", listId: "list-2", title: "Brot" },
+    ]);
+
+    await expect(getItemsByList("list-1")).resolves.toEqual([baseItem]);
+    await expect(getItemById("list-1", "item-2")).rejects.toThrow(
+      "Eintrag nicht gefunden",
+    );
+
+    await deleteItem("list-1", "item-1");
+    await expect(getItemsByList("list-2")).resolves.toHaveLength(1);
   });
 });
