@@ -10,7 +10,7 @@ const items = [
 export function HeroSection() {
   return (
     <section className="bg-emerald-950 text-emerald-50">
-      <div className="mx-auto grid min-h-[calc(100vh-9rem)] max-w-6xl grid-cols-1 items-center gap-10 px-5 py-12 md:grid-cols-[1.05fr_0.95fr] lg:py-16">
+      <div className="mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-center gap-10 px-5 py-12 md:grid-cols-[1.05fr_0.95fr] lg:py-16">
         <div>
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-amber-300">
             Shopping List · gemeinsame Einkaufsliste
