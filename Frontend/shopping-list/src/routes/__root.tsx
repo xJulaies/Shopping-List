@@ -1,5 +1,5 @@
 import type { useAuth } from "@clerk/clerk-react";
-import { createRootRouteWithContext } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { NotFoundPage } from "@/shared/layout/NotFoundPage";
 import { RootLayout } from "@/shared/layout/RootLayout";
 
@@ -8,6 +8,10 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: RootLayout,
+  component: () => (
+    <RootLayout>
+      <Outlet />
+    </RootLayout>
+  ),
   notFoundComponent: NotFoundPage,
 });
