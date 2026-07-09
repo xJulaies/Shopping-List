@@ -7,7 +7,16 @@ export declare const createShoppingItemSchema: z.ZodObject<{
     quantity: z.ZodCoercedNumber<unknown>;
     unit: z.ZodString;
     priority: z.ZodString;
-    store: z.ZodOptional<z.ZodString>;
+    store: z.ZodOptional<z.ZodEnum<{
+        Kaufland: "Kaufland";
+        Lidl: "Lidl";
+        Rewe: "Rewe";
+        Edeka: "Edeka";
+        Penny: "Penny";
+        Aldi: "Aldi";
+        Netto: "Netto";
+        Famila: "Famila";
+    }>>;
     price: z.ZodOptional<z.ZodCoercedNumber<unknown>>;
 }, z.core.$strip>;
 export declare const updateShoppingItemSchema: z.ZodObject<{
@@ -18,7 +27,16 @@ export declare const updateShoppingItemSchema: z.ZodObject<{
     quantity: z.ZodOptional<z.ZodCoercedNumber<unknown>>;
     unit: z.ZodOptional<z.ZodString>;
     priority: z.ZodOptional<z.ZodString>;
-    store: z.ZodOptional<z.ZodOptional<z.ZodString>>;
+    store: z.ZodOptional<z.ZodOptional<z.ZodEnum<{
+        Kaufland: "Kaufland";
+        Lidl: "Lidl";
+        Rewe: "Rewe";
+        Edeka: "Edeka";
+        Penny: "Penny";
+        Aldi: "Aldi";
+        Netto: "Netto";
+        Famila: "Famila";
+    }>>>;
     price: z.ZodOptional<z.ZodOptional<z.ZodCoercedNumber<unknown>>>;
 }, z.core.$strip>;
 //# sourceMappingURL=shoppingItem.zodSchema.d.ts.map

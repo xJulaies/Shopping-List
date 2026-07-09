@@ -2,6 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateShoppingItemSchema = exports.createShoppingItemSchema = void 0;
 const zod_1 = require("zod");
+const shoppingItemStoreSchema = zod_1.z.enum([
+    "Kaufland",
+    "Lidl",
+    "Rewe",
+    "Edeka",
+    "Penny",
+    "Aldi",
+    "Netto",
+    "Famila",
+]);
 exports.createShoppingItemSchema = zod_1.z.object({
     title: zod_1.z
         .string()
@@ -18,7 +28,7 @@ exports.createShoppingItemSchema = zod_1.z.object({
     quantity: zod_1.z.coerce.number().positive("Quantity must be greater than 0"),
     unit: zod_1.z.string().trim().min(1, "Unit is required"),
     priority: zod_1.z.string().trim().min(1, "Priority is required"),
-    store: zod_1.z.string().trim().optional(),
+    store: shoppingItemStoreSchema.optional(),
     price: zod_1.z.coerce.number().nonnegative("Price must not be negative").optional(),
 });
 exports.updateShoppingItemSchema = exports.createShoppingItemSchema

@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+const shoppingItemStoreSchema = z.enum([
+  "Kaufland",
+  "Lidl",
+  "Rewe",
+  "Edeka",
+  "Penny",
+  "Aldi",
+  "Netto",
+  "Famila",
+]);
+
 export const createShoppingItemSchema = z.object({
   title: z
     .string()
@@ -16,7 +27,7 @@ export const createShoppingItemSchema = z.object({
   quantity: z.coerce.number().positive("Quantity must be greater than 0"),
   unit: z.string().trim().min(1, "Unit is required"),
   priority: z.string().trim().min(1, "Priority is required"),
-  store: z.string().trim().optional(),
+  store: shoppingItemStoreSchema.optional(),
   price: z.coerce.number().nonnegative("Price must not be negative").optional(),
 });
 

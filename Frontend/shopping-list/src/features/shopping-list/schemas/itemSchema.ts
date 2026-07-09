@@ -15,6 +15,17 @@ export const itemUnitSchema = z.enum(["Stück", "kg", "g", "Liter", "Packung"]);
 
 export const itemPrioritySchema = z.enum(["niedrig", "mittel", "hoch"]);
 
+export const itemStoreSchema = z.enum([
+  "Kaufland",
+  "Lidl",
+  "Rewe",
+  "Edeka",
+  "Penny",
+  "Aldi",
+  "Netto",
+  "Famila",
+]);
+
 export const itemSchema = z.object({
   title: z
     .string()
@@ -31,7 +42,7 @@ export const itemSchema = z.object({
     .positive("Menge muss größer als 0 sein"),
   unit: itemUnitSchema,
   priority: itemPrioritySchema,
-  store: z.string().optional(),
+  store: itemStoreSchema.optional(),
   price: z.number().nonnegative("Preis darf nicht negativ sein").optional(),
 });
 

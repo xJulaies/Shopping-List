@@ -62,7 +62,7 @@ export function EditItemPage({
     quantity: item.quantity,
     unit: item.unit,
     priority: item.priority,
-    store: item.store ?? "",
+    store: item.store,
     price: item.price,
   };
 

@@ -12,6 +12,16 @@ export type ItemUnit = "Stück" | "kg" | "g" | "Liter" | "Packung";
 
 export type ItemPriority = "niedrig" | "mittel" | "hoch";
 
+export type ItemStore =
+  | "Kaufland"
+  | "Lidl"
+  | "Rewe"
+  | "Edeka"
+  | "Penny"
+  | "Aldi"
+  | "Netto"
+  | "Famila";
+
 export interface ShoppingItem {
   id: string;
   listId?: string;
@@ -22,7 +32,7 @@ export interface ShoppingItem {
   quantity: number;
   unit: ItemUnit;
   priority: ItemPriority;
-  store?: string;
+  store?: ItemStore;
   price?: number;
   createdAt: string;
   updatedAt: string;

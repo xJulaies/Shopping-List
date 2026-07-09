@@ -1,8 +1,10 @@
 ﻿import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { ConfirmDialog } from "@/shared/components/ConfirmDialog";
 import {
   setActionFeedback,
   takeActionFeedback,
+  takeItemJustCreated,
 } from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
 import { useDeleteItem } from "../hooks/useItemMutations";
@@ -18,6 +20,8 @@ export function ItemDetails({
   const deleteItem = useDeleteItem();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState(() => takeActionFeedback());
+  const [wasJustCreated] = useState(() => takeItemJustCreated());
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -44,11 +48,6 @@ export function ItemDetails({
   }
 
   function handleDelete() {
-    const shouldDelete = window.confirm(
-      "Möchtest du diesen Eintrag wirklich löschen?",
-    );
-    if (!shouldDelete) return;
-
     deleteItem.mutate(
       { listId, id: itemId },
       {
@@ -62,13 +61,26 @@ export function ItemDetails({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-8">
-      <Link
-        to="/lists/$listId"
-        params={{ listId }}
-        className="link link-primary text-sm mb-4 inline-block"
-      >
-        Zurück zur Übersicht
-      </Link>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <Link
+          to="/lists/$listId"
+          params={{ listId }}
+          className="link link-primary text-sm"
+        >
+          Zurück zur Übersicht
+        </Link>
+        {wasJustCreated && (
+          <Link
+            to="/lists/$listId/items/new"
+            params={{ listId }}
+            className="btn btn-primary btn-square btn-sm text-xl"
+            aria-label="Weiteres Produkt hinzufügen"
+            title="Weiteres Produkt hinzufügen"
+          >
+            +
+          </Link>
+        )}
+      </div>
 
       {feedback && (
         <div className="alert alert-success mb-4">
@@ -130,15 +142,24 @@ export function ItemDetails({
               Bearbeiten
             </Link>
             <button
-              onClick={handleDelete}
+              onClick={() => setIsDeleteDialogOpen(true)}
               disabled={deleteItem.isPending}
               className="btn btn-error"
             >
-              {deleteItem.isPending ? "Löschen..." : "Löschen"}
+              Löschen
             </button>
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        title="Produkt löschen?"
+        description={`Möchtest du "${item.title}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.`}
+        confirmLabel="Produkt löschen"
+        isPending={deleteItem.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setIsDeleteDialogOpen(false)}
+      />
     </div>
   );
 }

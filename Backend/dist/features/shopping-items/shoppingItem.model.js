@@ -57,6 +57,16 @@ const shoppingItemSchema = new mongoose_1.Schema({
     store: {
         type: String,
         trim: true,
+        enum: [
+            "Kaufland",
+            "Lidl",
+            "Rewe",
+            "Edeka",
+            "Penny",
+            "Aldi",
+            "Netto",
+            "Famila",
+        ],
     },
     price: {
         type: Number,

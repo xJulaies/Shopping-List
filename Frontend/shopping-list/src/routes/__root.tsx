@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { Navbar } from "@/shared/components/Navbar";
-import { Footer } from "@/shared/components/Footer";
+import { Footer } from "@/shared/components/footer/Footer";
 import { ListPreferencesProvider } from "@/context/ListPreferencesContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import type { useAuth } from "@clerk/clerk-react";

@@ -74,6 +74,16 @@ const shoppingItemSchema = new Schema<TShoppingItem>(
     store: {
       type: String,
       trim: true,
+      enum: [
+        "Kaufland",
+        "Lidl",
+        "Rewe",
+        "Edeka",
+        "Penny",
+        "Aldi",
+        "Netto",
+        "Famila",
+      ],
     },
     price: {
       type: Number,

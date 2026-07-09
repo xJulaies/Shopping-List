@@ -46,8 +46,9 @@ export function ShoppingListsPage() {
       </div>
 
       <form
+        id="new-list"
         onSubmit={handleSubmit}
-        className="mb-8 grid gap-3 rounded-lg border border-base-300 bg-base-100 p-4 md:grid-cols-[1fr_1.4fr_auto]"
+        className="mb-8 grid scroll-mt-24 gap-3 rounded-lg border border-base-300 bg-base-100 p-4 md:grid-cols-[1fr_1.4fr_auto]"
       >
         <input
           value={title}

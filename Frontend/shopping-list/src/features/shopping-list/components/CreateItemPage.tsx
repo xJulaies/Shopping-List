@@ -1,6 +1,9 @@
 ﻿import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { setActionFeedback } from "@/shared/utils/actionFeedback";
+import {
+  markItemAsJustCreated,
+  setActionFeedback,
+} from "@/shared/utils/actionFeedback";
 import { useCreateItem } from "../hooks/useItemMutations";
 import { ItemForm } from "./ItemForm";
 import type { CreateShoppingItemInput } from "../types/item";
@@ -17,6 +20,7 @@ export function CreateItemPage({ listId }: { listId: string }) {
       {
         onSuccess: (created) => {
           setActionFeedback("Eintrag wurde erfolgreich erstellt.");
+          markItemAsJustCreated();
           navigate({
             to: "/lists/$listId/items/$itemId",
             params: { listId, itemId: created.id },
