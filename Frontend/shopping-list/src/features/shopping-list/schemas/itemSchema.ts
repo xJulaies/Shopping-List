@@ -11,7 +11,7 @@ export const itemCategorySchema = z.enum([
 
 export const itemStatusSchema = z.enum(["offen", "im Warenkorb", "gekauft"]);
 
-export const itemUnitSchema = z.enum(["Stück", "kg", "g", "Liter", "Packung"]);
+export const itemUnitSchema = z.enum(["Stück", "kg", "Liter", "Packung"]);
 
 export const itemPrioritySchema = z.enum(["niedrig", "mittel", "hoch"]);
 

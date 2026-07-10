@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { setActionFeedback } from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
@@ -31,6 +31,13 @@ export function EditItemPage({
     return (
       <div className="flex flex-col items-center py-16 text-center gap-3">
         <p className="text-lg font-medium">Eintrag nicht gefunden.</p>
+        <Link
+          to="/lists/$listId"
+          params={{ listId }}
+          className="link link-primary"
+        >
+          Zurück zur Übersicht
+        </Link>
       </div>
     );
   }
@@ -68,6 +75,14 @@ export function EditItemPage({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-8">
+      <Link
+        to="/lists/$listId"
+        params={{ listId }}
+        className="link link-primary mb-4 inline-block text-sm"
+      >
+        Zurück zur Übersicht
+      </Link>
+
       <div className="mb-6">
         <p className="text-sm font-medium text-primary">Einkaufsliste</p>
         <h1 className="text-3xl font-bold">Eintrag bearbeiten</h1>

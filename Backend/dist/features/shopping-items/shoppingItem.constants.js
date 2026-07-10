@@ -17,7 +17,6 @@ exports.SHOPPING_ITEM_STATUSES = [
 exports.SHOPPING_ITEM_UNITS = [
     "Stück",
     "kg",
-    "g",
     "Liter",
     "Packung",
 ];

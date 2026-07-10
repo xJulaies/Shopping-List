@@ -16,7 +16,6 @@ export const SHOPPING_ITEM_STATUSES = [
 export const SHOPPING_ITEM_UNITS = [
   "Stück",
   "kg",
-  "g",
   "Liter",
   "Packung",
 ] as const;

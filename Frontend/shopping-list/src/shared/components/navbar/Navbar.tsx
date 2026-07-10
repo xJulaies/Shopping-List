@@ -3,6 +3,48 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 
+function SunIcon() {
+  return (
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3a6 6 0 0 0 9 7.5 9 9 0 1 1-9-7.5Z" />
+    </svg>
+  );
+}
+
 export function Navbar() {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,9 +78,79 @@ export function Navbar() {
   return (
     <div className="navbar sticky top-0 z-20 min-h-16 border-b border-base-300 bg-base-100/95 px-3 text-base-content shadow-sm backdrop-blur sm:px-4">
       <div className="navbar-start min-w-0">
+        <div ref={mobileMenuRef} className="dropdown dropdown-start lg:hidden">
+          <button
+            type="button"
+            className="btn btn-square btn-sm btn-ghost"
+            aria-label={
+              isMobileMenuOpen ? "Navigation schliessen" : "Navigation oeffnen"
+            }
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+          >
+            <span
+              className="flex h-4 w-5 flex-col justify-between"
+              aria-hidden="true"
+            >
+              <span className="h-0.5 w-full bg-current" />
+              <span className="h-0.5 w-full bg-current" />
+              <span className="h-0.5 w-full bg-current" />
+            </span>
+          </button>
+          {isMobileMenuOpen && (
+            <ul
+              id="mobile-navigation"
+              className="menu dropdown-content z-30 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+            >
+              <li>
+                <Link to="/lists" hash="new-list" onClick={closeMobileMenu}>
+                  Neue Liste
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard"
+                  onClick={closeMobileMenu}
+                  activeProps={{ className: "bg-neutral text-neutral-content" }}
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/lists"
+                  onClick={closeMobileMenu}
+                  activeProps={{ className: "bg-neutral text-neutral-content" }}
+                >
+                  Einkaufslisten
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  onClick={closeMobileMenu}
+                  activeProps={{ className: "bg-neutral text-neutral-content" }}
+                >
+                  About
+                </Link>
+              </li>
+            </ul>
+          )}
+        </div>
+
         <Link
           to="/"
-          className="btn btn-ghost min-w-0 px-2 text-lg font-bold hover:bg-base-200 sm:text-xl"
+          className="btn btn-ghost hidden min-w-0 px-2 text-xl font-bold hover:bg-base-200 lg:inline-flex"
+        >
+          <span className="truncate">Shopping List</span>
+        </Link>
+      </div>
+
+      <div className="navbar-center min-w-0 lg:hidden">
+        <Link
+          to="/"
+          className="btn btn-ghost min-w-0 px-2 text-lg font-bold hover:bg-base-200"
         >
           <span className="truncate">Shopping List</span>
         </Link>
@@ -85,10 +197,11 @@ export function Navbar() {
         <button
           type="button"
           onClick={toggleTheme}
-          className="btn btn-sm btn-outline px-2 sm:px-3"
+          className="btn btn-square btn-sm btn-outline"
           aria-label={isDark ? "Bright Mode aktivieren" : "Dark Mode aktivieren"}
+          title={isDark ? "Bright Mode aktivieren" : "Dark Mode aktivieren"}
         >
-          {isDark ? "Bright" : "Dark"}
+          {isDark ? <SunIcon /> : <MoonIcon />}
         </button>
         <SignedOut>
           <Link
@@ -107,68 +220,6 @@ export function Navbar() {
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
-
-        <div ref={mobileMenuRef} className="dropdown dropdown-end lg:hidden">
-          <button
-            type="button"
-            className="btn btn-square btn-sm btn-ghost"
-            aria-label={
-              isMobileMenuOpen ? "Navigation schließen" : "Navigation öffnen"
-            }
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-navigation"
-            onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
-          >
-            <span className="flex h-4 w-5 flex-col justify-between" aria-hidden="true">
-              <span className="h-0.5 w-full bg-current" />
-              <span className="h-0.5 w-full bg-current" />
-              <span className="h-0.5 w-full bg-current" />
-            </span>
-          </button>
-          {isMobileMenuOpen && (
-            <ul
-              id="mobile-navigation"
-              className="menu dropdown-content z-30 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
-            >
-              <li>
-                <Link
-                  to="/lists"
-                  hash="new-list"
-                  onClick={closeMobileMenu}
-                >
-                  Neue Liste
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard"
-                  onClick={closeMobileMenu}
-                  activeProps={{ className: "bg-neutral text-neutral-content" }}
-                >
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/lists"
-                  onClick={closeMobileMenu}
-                  activeProps={{ className: "bg-neutral text-neutral-content" }}
-                >
-                  Einkaufslisten
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about"
-                  onClick={closeMobileMenu}
-                  activeProps={{ className: "bg-neutral text-neutral-content" }}
-                >
-                  About
-                </Link>
-              </li>
-            </ul>
-          )}
-        </div>
       </div>
     </div>
   );

@@ -1,26 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ConfirmDialog } from "@/shared/components/ConfirmDialog";
-import {
-  useDeleteItem,
-  useUpdateItem,
-} from "../hooks/useItemMutations";
+import { useDeleteItem, useUpdateItem } from "../hooks/useItemMutations";
 import type { ShoppingItem } from "../types/item";
-
-const statusColors: Record<ShoppingItem["status"], string> = {
-  offen: "badge-warning",
-  "im Warenkorb": "badge-info",
-  gekauft: "badge-success",
-};
-
-const nextStatus: Record<
-  ShoppingItem["status"],
-  ShoppingItem["status"]
-> = {
-  offen: "im Warenkorb",
-  "im Warenkorb": "gekauft",
-  gekauft: "offen",
-};
+import { formatEuroPrice, getItemTotalPrice } from "../utils/price";
+import { nextItemStatus, statusBadgeColors } from "../utils/status";
 
 export function ItemCard({
   item,
@@ -32,7 +16,8 @@ export function ItemCard({
   const updateItem = useUpdateItem();
   const deleteItem = useDeleteItem();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const upcomingStatus = nextStatus[item.status];
+  const upcomingStatus = nextItemStatus[item.status];
+  const totalPrice = getItemTotalPrice(item);
 
   const cycleStatus = () => {
     updateItem.mutate({
@@ -51,66 +36,60 @@ export function ItemCard({
 
   return (
     <>
-      <div
-        className="grid gap-3 px-4 py-4 transition-colors hover:bg-base-200/60 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-center sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto]"
-      >
-      <Link
-        to="/lists/$listId/items/$itemId"
-        params={{ listId, itemId: item.id }}
-        className="min-w-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
-      >
-        <h3 className="font-semibold leading-snug">{item.title}</h3>
-        <p className="mt-1 text-sm leading-5 text-base-content/65">
-          {item.description}
-        </p>
-      </Link>
-      <div className="hidden min-w-0 lg:block">
-        <h3 className="font-semibold leading-snug">{item.title}</h3>
-        <p className="mt-1 text-sm leading-5 text-base-content/65">
-          {item.description}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3 sm:contents">
-        <span className="whitespace-nowrap text-sm">
-          {item.quantity} {item.unit}
-        </span>
-        <button
-          type="button"
-          className={`badge shrink-0 cursor-pointer transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60 ${statusColors[item.status]}`}
-          aria-label={`Status von ${item.status} zu ${upcomingStatus} ändern`}
-          title={`Nächster Status: ${upcomingStatus}`}
-          disabled={updateItem.isPending}
-          onClick={cycleStatus}
+      <div className="grid gap-3 px-4 py-4 transition-colors hover:bg-base-200/60 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-center sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto]">
+        <Link
+          to="/lists/$listId/items/$itemId"
+          params={{ listId, itemId: item.id }}
+          className="min-w-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
         >
-          {item.status}
-        </button>
-        <span className="ml-auto whitespace-nowrap text-sm font-semibold sm:ml-0 sm:min-w-20 sm:text-right">
-          {item.price !== undefined
-            ? item.price.toLocaleString("de-DE", {
-                style: "currency",
-                currency: "EUR",
-              })
-            : "-"}
-        </span>
-        <div className="hidden items-center gap-2 lg:flex">
-          <Link
-            to="/lists/$listId/items/$itemId/edit"
-            params={{ listId, itemId: item.id }}
-            className="btn btn-outline btn-sm"
-          >
-            Bearbeiten
-          </Link>
+          <h3 className="font-semibold leading-snug">{item.title}</h3>
+          <p className="mt-1 text-sm leading-5 text-base-content/65">
+            {item.description}
+          </p>
+        </Link>
+
+        <div className="hidden min-w-0 lg:block">
+          <h3 className="font-semibold leading-snug">{item.title}</h3>
+          <p className="mt-1 text-sm leading-5 text-base-content/65">
+            {item.description}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 sm:contents">
+          <span className="whitespace-nowrap text-sm">
+            {item.quantity} {item.unit}
+          </span>
           <button
             type="button"
-            className="btn btn-error btn-sm"
-            disabled={deleteItem.isPending}
-            onClick={() => setIsDeleteDialogOpen(true)}
+            className={`badge shrink-0 cursor-pointer transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60 ${statusBadgeColors[item.status]}`}
+            aria-label={`Status von ${item.status} zu ${upcomingStatus} aendern`}
+            title={`Naechster Status: ${upcomingStatus}`}
+            disabled={updateItem.isPending}
+            onClick={cycleStatus}
           >
-            Löschen
+            {item.status}
           </button>
+          <span className="ml-auto whitespace-nowrap text-sm font-semibold sm:ml-0 sm:min-w-20 sm:text-right">
+            {totalPrice !== undefined ? formatEuroPrice(totalPrice) : "-"}
+          </span>
+          <div className="hidden items-center gap-2 lg:flex">
+            <Link
+              to="/lists/$listId/items/$itemId/edit"
+              params={{ listId, itemId: item.id }}
+              className="btn btn-outline btn-sm"
+            >
+              Bearbeiten
+            </Link>
+            <button
+              type="button"
+              className="btn btn-error btn-sm"
+              disabled={deleteItem.isPending}
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Löschen
+            </button>
+          </div>
         </div>
-      </div>
       </div>
       <ConfirmDialog
         isOpen={isDeleteDialogOpen}

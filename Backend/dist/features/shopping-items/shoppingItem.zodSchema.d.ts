@@ -19,7 +19,6 @@ export declare const createShoppingItemSchema: z.ZodObject<{
     unit: z.ZodEnum<{
         Stück: "Stück";
         kg: "kg";
-        g: "g";
         Liter: "Liter";
         Packung: "Packung";
     }>;
@@ -60,7 +59,6 @@ export declare const updateShoppingItemSchema: z.ZodObject<{
     unit: z.ZodOptional<z.ZodEnum<{
         Stück: "Stück";
         kg: "kg";
-        g: "g";
         Liter: "Liter";
         Packung: "Packung";
     }>>;

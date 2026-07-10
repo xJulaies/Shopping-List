@@ -9,7 +9,9 @@ import {
   setActionFeedback,
 } from "@/shared/utils/actionFeedback";
 import { useItem } from "../hooks/useItem";
-import { useDeleteItem } from "../hooks/useItemMutations";
+import { useDeleteItem, useUpdateItem } from "../hooks/useItemMutations";
+import { formatEuroPrice, getItemTotalPrice } from "../utils/price";
+import { nextItemStatus, statusBadgeColors } from "../utils/status";
 
 export function ItemDetails({
   listId,
@@ -20,6 +22,7 @@ export function ItemDetails({
 }) {
   const { data: item, isLoading, isError } = useItem(listId, itemId);
   const deleteItem = useDeleteItem();
+  const updateItem = useUpdateItem();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState(() => readActionFeedback());
   const [wasJustCreated] = useState(() => readItemJustCreated());
@@ -66,6 +69,17 @@ export function ItemDetails({
     );
   }
 
+  const upcomingStatus = nextItemStatus[item.status];
+  const totalPrice = getItemTotalPrice(item);
+
+  const cycleStatus = () => {
+    updateItem.mutate({
+      listId,
+      id: item.id,
+      data: { status: upcomingStatus },
+    });
+  };
+
   return (
     <div className="mx-auto max-w-2xl px-5 py-8">
       <div className="mb-4 flex items-center justify-between gap-4">
@@ -106,7 +120,16 @@ export function ItemDetails({
         <div className="card-body">
           <div className="flex items-start justify-between gap-2">
             <h1 className="card-title text-2xl">{item.title}</h1>
-            <span className="badge badge-lg">{item.status}</span>
+            <button
+              type="button"
+              className={`badge badge-lg cursor-pointer transition-transform hover:scale-105 disabled:cursor-wait disabled:opacity-60 ${statusBadgeColors[item.status]}`}
+              aria-label={`Status von ${item.status} zu ${upcomingStatus} aendern`}
+              title={`Naechster Status: ${upcomingStatus}`}
+              disabled={updateItem.isPending}
+              onClick={cycleStatus}
+            >
+              {item.status}
+            </button>
           </div>
 
           <p className="text-base-content/70">{item.description}</p>
@@ -127,9 +150,9 @@ export function ItemDetails({
               </p>
             </div>
             <div>
-              <span className="text-base-content/50">Preis</span>
+              <span className="text-base-content/50">Preis gesamt</span>
               <p className="font-medium">
-                {item.price !== undefined ? `${item.price.toFixed(2)} EUR` : "-"}
+                {totalPrice !== undefined ? formatEuroPrice(totalPrice) : "-"}
               </p>
             </div>
             {item.store && (

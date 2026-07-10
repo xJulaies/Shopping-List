@@ -1,4 +1,5 @@
-﻿import type { ShoppingItem } from "../types/item";
+import type { ShoppingItem } from "../types/item";
+import { formatEuroPrice, getItemTotalPrice } from "../utils/price";
 import { ItemCard } from "./ItemCard";
 
 const categoryOrder: ShoppingItem["category"][] = [
@@ -35,7 +36,10 @@ export function ItemList({
     }))
     .filter((group) => group.items.length > 0);
 
-  const totalPrice = items.reduce((total, item) => total + (item.price ?? 0), 0);
+  const totalPrice = items.reduce(
+    (total, item) => total + (getItemTotalPrice(item) ?? 0),
+    0,
+  );
 
   return (
     <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
@@ -57,12 +61,7 @@ export function ItemList({
 
       <div className="flex items-center justify-between border-t border-base-300 bg-base-200 px-4 py-4 sm:px-5">
         <span className="font-medium">Gesamtpreis</span>
-        <span className="text-lg font-bold">
-          {totalPrice.toLocaleString("de-DE", {
-            style: "currency",
-            currency: "EUR",
-          })}
-        </span>
+        <span className="text-lg font-bold">{formatEuroPrice(totalPrice)}</span>
       </div>
     </div>
   );

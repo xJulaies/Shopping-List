@@ -8,7 +8,7 @@
 
 export type ItemStatus = "offen" | "im Warenkorb" | "gekauft";
 
-export type ItemUnit = "Stück" | "kg" | "g" | "Liter" | "Packung";
+export type ItemUnit = "Stück" | "kg" | "Liter" | "Packung";
 
 export type ItemPriority = "niedrig" | "mittel" | "hoch";
 

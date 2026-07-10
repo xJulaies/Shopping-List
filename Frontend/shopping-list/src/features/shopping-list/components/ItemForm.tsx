@@ -13,7 +13,7 @@ const categories = [
 ] as const;
 
 const statuses = ["offen", "im Warenkorb", "gekauft"] as const;
-const units = ["Stück", "kg", "g", "Liter", "Packung"] as const;
+const units = ["Stück", "kg", "Liter", "Packung"] as const;
 const priorities = ["niedrig", "mittel", "hoch"] as const;
 const PRICE_STEP = 0.5;
 const stores = [
@@ -476,7 +476,7 @@ export function ItemForm({
           {(field) => (
             <div className="form-control flex flex-col gap-1">
               <label className="label" htmlFor={field.name}>
-                <span className="label-text">Preis (optional)</span>
+                <span className="label-text">Preis pro Einheit (optional)</span>
               </label>
               <div className="join w-full">
                 <button
