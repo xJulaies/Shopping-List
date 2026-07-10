@@ -1,10 +1,20 @@
-# Shopping List App - Projektkontext
+# Shopping List App
 
-Diese Datei dient als kurzer Uebergabekontext fuer einen neuen Chat.
+Eine Fullstack-App zum Erstellen und Verwalten von Einkaufslisten. Nutzer melden sich mit Clerk an, legen mehrere Listen an und pflegen darin Produkte mit Menge, Einheit, Kategorie, Status, Priorität, Laden und Preis.
 
-## Ziel
+## Was die App macht
 
-Die App ist eine Fullstack-Shopping-List-Anwendung mit Authentifizierung. Nutzer melden sich ueber Clerk an, erstellen Einkaufslisten und verwalten darin einzelne Eintraege.
+Die App hilft dabei, Einkäufe strukturiert zu planen:
+
+- Einkaufslisten erstellen, anzeigen und löschen
+- Produkte innerhalb einer Liste erstellen, bearbeiten und löschen
+- Produkte nach Kategorie gruppiert in einer großen Einkaufsliste anzeigen
+- Produkte nach Suche, Status, Kategorie und Priorität filtern
+- Status direkt per Badge umschalten: `offen` -> `im Warenkorb` -> `gekauft`
+- Preise als Preis pro Einheit erfassen und automatisch mit der Menge verrechnen
+- Gesamtpreis der angezeigten Liste berechnen
+- Responsive Navigation mit mobilem Dropdown
+- Theme-Wechsel zwischen hellem und dunklem DaisyUI-Theme
 
 ## Projektstruktur
 
@@ -12,22 +22,26 @@ Die App ist eine Fullstack-Shopping-List-Anwendung mit Authentifizierung. Nutzer
 Gruppenarbeit2/
 |-- Backend/
 |   |-- src/
-|   |   |-- config/settings.ts
-|   |   |-- db.ts
-|   |   |-- index.ts
+|   |   |-- config/
+|   |   |-- features/
+|   |   |   |-- shopping-items/
+|   |   |   `-- shopping-lists/
+|   |   |-- lib/
 |   |   |-- middlewares/
-|   |   |-- lib/error-handling/
-|   |   `-- features/
-|   |       |-- shopping-lists/
-|   |       `-- shopping-items/
+|   |   |-- db.ts
+|   |   `-- index.ts
 |   `-- package.json
 |-- Frontend/
 |   `-- shopping-list/
 |       |-- src/
+|       |   |-- context/
 |       |   |-- features/
+|       |   |   |-- auth/
+|       |   |   |-- dashboard/
+|       |   |   |-- home/
+|       |   |   `-- shopping-list/
 |       |   |-- routes/
 |       |   |-- shared/
-|       |   |-- context/
 |       |   |-- App.tsx
 |       |   `-- main.tsx
 `-- readme.md
@@ -62,7 +76,7 @@ Backend:
 
 ## Lokales Setup
 
-Backend:
+Backend starten:
 
 ```bash
 cd Backend
@@ -70,7 +84,7 @@ npm install
 npm run dev
 ```
 
-Frontend:
+Frontend starten:
 
 ```bash
 cd Frontend/shopping-list
@@ -103,21 +117,43 @@ VITE_API_URL=http://localhost:3000/api
 VITE_CLERK_PUBLISHABLE_KEY=...
 ```
 
-Wichtig: Clerk Secret Keys nie in Chats oder Commits posten.
+Wichtig: Clerk Secret Keys und andere echte Zugangsdaten nicht committen oder teilen.
 
-## Backend-Architektur
+## Frontend
 
-Der Einstiegspunkt ist `Backend/src/index.ts`.
+Das Frontend ist featurebasiert aufgebaut.
 
-Aktuelle Routen:
+Wichtige Bereiche:
 
-- `GET /` Healthcheck
-- `/api/lists`
-- `/api/lists/:listId/items`
+- `features/home`: Startseite und Hero-Bereich
+- `features/auth`: Clerk Sign-in und Sign-up
+- `features/dashboard`: Übersicht über Listen
+- `features/shopping-list`: Listen, Produkte, Formulare, Hooks, Services, Schemas und Utilities
+- `routes`: TanStack Router File Routes
+- `shared`: Layout und wiederverwendbare Komponenten wie Navbar, Footer und Dialoge
+- `context`: Theme und Listenpräferenzen
 
-Die API ist listenbasiert. Items haengen immer an einer Liste:
+Wichtige Funktionen:
+
+- Authentifizierte Bereiche liegen unter `_authenticated`
+- Listenübersicht: `/lists`
+- Einzelne Liste: `/lists/$listId`
+- Produkt erstellen: `/lists/$listId/items/new`
+- Produktdetails: `/lists/$listId/items/$itemId`
+- Produkt bearbeiten: `/lists/$listId/items/$itemId/edit`
+- Mobile Ansicht nutzt die Detailseite für Produkte
+- Desktop Ansicht zeigt Bearbeiten- und Löschen-Buttons direkt in der Produktzeile
+- Löschen nutzt einen DaisyUI/Tailwind-Dialog statt `window.confirm`
+
+## Backend
+
+Der Backend-Einstiegspunkt ist `Backend/src/index.ts`.
+
+Routen:
 
 ```txt
+GET    /
+
 GET    /api/lists
 POST   /api/lists
 GET    /api/lists/:listId
@@ -131,95 +167,76 @@ PATCH  /api/lists/:listId/items/:itemId
 DELETE /api/lists/:listId/items/:itemId
 ```
 
-Auth:
+Backend-Eigenschaften:
 
-- Clerk wird ueber `clerkMiddleware` eingebunden.
-- `requireAuth.ts` nutzt modern `getAuth(req)`.
-- Controller speichern und pruefen `userId`, damit Nutzer nur ihre eigenen Listen und Items sehen.
+- Clerk Auth wird serverseitig validiert.
+- Controller speichern und prüfen `userId`, damit Nutzer nur eigene Daten sehen.
+- Items sind immer listenbasiert und gehören zu einer `listId`.
+- Request-Bodies werden mit Zod validiert.
+- Mongoose-Models nutzen Enums für Kategorie, Status, Einheit, Priorität und Laden.
+- Beim Löschen einer Liste werden die zugehörigen Produkte mit entfernt.
+- Update-Endpunkte verwenden moderne Mongoose-Optionen wie `returnDocument: "after"`.
 
-MongoDB:
+## Datenmodell Kurzüberblick
 
-- Verbindung in `Backend/src/db.ts`.
-- Datenbank: `shopping-list-db`.
-- Mongoose-Models liegen featurebasiert in `shopping-lists` und `shopping-items`.
-- `shoppingItem.routes.ts` braucht `Router({ mergeParams: true })`, weil `listId` aus `/api/lists/:listId/items` kommt.
+Eine Einkaufsliste besteht aus:
 
-Error Handling:
+- `title`
+- `description`
+- `userId`
+- `createdAt`
+- `updatedAt`
 
-- Fehler werden ueber `createError` erzeugt.
-- Antworten laufen ueber `createAnswer`.
-- Zentraler Error Handler sitzt in `index.ts`.
+Ein Produkt besteht aus:
 
-## Frontend-Architektur
+- `title`
+- `description`
+- `category`
+- `status`
+- `quantity`
+- `unit`
+- `priority`
+- `store`
+- `price`
+- `listId`
+- `userId`
 
-Das Frontend ist featurebasiert aufgebaut.
+Unterstützte Einheiten:
 
-Wichtige Bereiche:
+- `Stück`
+- `kg`
+- `Liter`
+- `Packung`
 
-- `features/auth`: Clerk Sign-in und Sign-up Pages.
-- `features/dashboard`: Dashboard.
-- `features/shopping-list`: Listen, Items, Services, Hooks, Schemas und Komponenten.
-- `routes`: TanStack Router File Routes.
-- `shared`: Wiederverwendbare UI-Komponenten.
-- `context`: Theme und Listenpraeferenzen.
+Der gespeicherte `price` ist der Preis pro Einheit. In der UI wird der Positionspreis als `price * quantity` angezeigt und für den Gesamtpreis verwendet.
 
-Routing:
+## Validierung und Tests
 
-- Oeffentliche Seiten: `/`, `/about`, `/sign-in`, `/sign-up`
-- Geschuetzte Seiten liegen unter `_authenticated`
-- Listenuebersicht: `/lists`
-- Einzelne Liste: `/lists/$listId`
-- Beispiel: `http://localhost:5173/lists/6a4e14a0666273139b012b61`
-
-Clerk:
-
-- `main.tsx` wrapped die App mit `ClerkProvider`.
-- `App.tsx` wartet auf `auth.isLoaded`.
-- Sign-in und Sign-up nutzen Clerk Components mit `routing="path"`.
-- Splat-Routes fuer Clerk-Unterpfade existieren:
-  - `routes/sign-in.$.tsx`
-  - `routes/sign-up.$.tsx`
-
-API-Anbindung:
-
-- `listService.ts` ruft `/lists` auf.
-- `itemService.ts` ruft `/lists/:listId/items` auf.
-- Hooks holen Clerk Tokens ueber `getToken()` und senden `Authorization: Bearer <token>`.
-- In Tests faellt der Item-Service auf `localStorage` und Mockdaten zurueck.
-
-## Zuletzt wichtige Fixes
-
-- Backend wurde auf die Frontend-API angepasst: Items sind jetzt list-scoped.
-- Alte direkte `/api/items`-Nutzung wurde im Frontend durch `/api/lists/:listId/items` ersetzt.
-- Clerk wurde von deprecated Varianten auf moderne Route-/Middleware-Nutzung umgestellt.
-- 404 bei `/lists/:listId` war TanStack-Router/Dev-Server-Kontext; Route existiert dynamisch.
-- Backend-404 bei Items lag an fehlendem `mergeParams: true` im Child Router.
-- Umlaute im Frontend wurden korrigiert, statt `ae/oe/ue` werden echte Umlaute angezeigt.
-
-## Pruefung
-
-Frontend wurde zuletzt erfolgreich geprueft mit:
+Frontend:
 
 ```bash
-npm run test
+cd Frontend/shopping-list
+npm run lint
 npm run build
+npm test
 ```
 
-Fuer Backend nach Aenderungen nutzen:
+Backend:
 
 ```bash
 cd Backend
 npm run build
 ```
 
-## Naechste sinnvolle Checks
+## Typischer Testablauf im Browser
 
-- Backend mit `npm run build` pruefen.
-- Frontend und Backend parallel starten.
-- In MongoDB pruefen, ob Listen mit der richtigen Clerk `userId` gespeichert werden.
-- Im Browser mit angemeldetem Clerk-User testen:
-  - Liste erstellen
-  - Liste oeffnen
-  - Item erstellen
-  - Item bearbeiten
-  - Item loeschen
+1. Frontend und Backend starten.
+2. Mit Clerk anmelden.
+3. Eine Einkaufsliste erstellen.
+4. Ein Produkt hinzufügen.
+5. Weitere Produkte direkt über den Plus-Button anlegen.
+6. Status per Badge durchschalten.
+7. Preis und Menge prüfen.
+8. Produkt bearbeiten und über `Zurück zur Übersicht` zur Liste wechseln.
+9. Produkt über den Dialog löschen.
+10. Liste löschen und prüfen, dass zugehörige Produkte entfernt wurden.
